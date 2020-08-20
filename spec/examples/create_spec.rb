@@ -13,9 +13,7 @@ class Item < OpenStruct
   end
 
   def errors
-    {
-      name: 'invalid'
-    }
+    { name: 'invalid' }
   end
 
   def save
