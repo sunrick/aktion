@@ -1,4 +1,5 @@
 require "aktion/version"
+require "aktion/base"
 
 module Aktion
   class Error < StandardError; end
