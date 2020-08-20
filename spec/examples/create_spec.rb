@@ -1,55 +1,11 @@
-require "ostruct"
-require "pry"
-
-class User < OpenStruct
-  def self.create!(options)
-    new(options)
-  end
-end
-
-class Item < OpenStruct
-  def as_json
-    { name: name }
-  end
-
-  def errors
-    { name: 'invalid' }
-  end
-
-  def save
-    true
-  end
-end
-
-class Create < Aktion::Base
-  schema do
-    required(:params).hash do
-      required(:name).filled(:string)
-      optional(:completed_at).maybe(:date)
-    end
-  end
-
-  def perform
-    item = Item.new(item_params)
-    if item.save
-      success(item)
-    else
-      fail(:unprocessable_entity, item.errors)
-    end
-  end
-
-  private
-
-  def item_params
-    params.slice(:name)
-  end
-end
+require 'examples/create'
 
 RSpec.describe Create do
   let(:user) { User.create!(email: 'rickard@sunden.io') }
 
   let(:args) do
     {
+      headers: { email: user.email },
       params: { name: 'Clean kitchen' }
     }
   end
@@ -72,24 +28,24 @@ RSpec.describe Create do
       end
     end
 
-    # context 'unauthenticated request' do
-    #   let(:args) { { headers: {} } }
+    context 'unauthenticated request' do
+      let(:args) { { headers: {} } }
 
-    #   it 'response is an error' do
-    #     action = described_class.run(args)
-    #     expect(action.failure?).to eq(true)
-    #     expect(action.render).to eq({
-    #       json: {
-    #         "errors" =>  {
-    #           "headers" => {
-    #             "email"=> ["is missing"]
-    #           }
-    #         }
-    #       },
-    #       status: :bad_request
-    #     })
-    #   end
-    # end
+      it 'response is an error' do
+        action = described_class.run(args)
+        expect(action.failure?).to eq(true)
+        expect(action.render).to eq({
+          json: {
+            errors: {
+              headers: {
+                email: ["is missing"]
+              }
+            }
+          },
+          status: :bad_request
+        })
+      end
+    end
 
     context 'invalid request' do
       before do
@@ -101,8 +57,8 @@ RSpec.describe Create do
         expect(action.failure?).to eq(true)
         expect(action.render).to eq({
           json: {
-            :errors =>  {
-              :name => 'invalid'
+            errors: {
+              name: 'invalid'
             }
           },
           status: :unprocessable_entity
@@ -120,9 +76,9 @@ RSpec.describe Create do
         expect(action.failure?).to eq(true)
         expect(action.render).to eq({
           json: {
-            :errors =>  {
-              :params => {
-                :name => ["must be filled"]
+            errors: {
+              params: {
+                name: ["must be filled"]
               }
             }
           },
