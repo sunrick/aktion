@@ -87,4 +87,16 @@ RSpec.describe Create do
       end
     end
   end
+
+  context '.new' do
+    context 'no current user' do
+      it 'should fail but not make current_user public' do
+        action = described_class.new({})
+        action.validate
+        expect(action.json).to eq({
+          errors: { params: ["is missing"] }
+        })
+      end
+    end
+  end
 end

@@ -1,6 +1,6 @@
 require 'examples/user'
 
-class Authenticate < Aktion::Base
+class Authenticate < Aktion::HTTP
   schema do
     required(:headers).hash do
       required(:email).filled(:string)

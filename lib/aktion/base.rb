@@ -42,7 +42,7 @@ module Aktion
       end
 
       def default_args
-        { headers: {}, params: {}, globals: {} }
+        {}
       end
 
       def schema(&block)
@@ -58,27 +58,19 @@ module Aktion
       @request = request
     end
 
-    def params
-      request[:params]
-    end
-
-    def headers
-      request[:headers]
-    end
-
-    def globals
-      request[:globals]
-    end
-
     def validate
       validation = self.class.schema&.call(request)
       if validation.nil? || validation.success?
         request.merge!(validation.to_h) if validation
         true
       else
-        fail(:bad_request, validation.errors.to_h)
+        fail(:bad_request, allowed_validation_errors(validation.errors.to_h))
         false
       end
+    end
+
+    def allowed_validation_errors(errors)
+      errors
     end
 
     def perform
