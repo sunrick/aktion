@@ -14,12 +14,12 @@ RSpec.describe Create do
     user
   end
 
-  context '.run' do
+  context '.perform' do
     context 'valid request' do
       it 'response is successful' do
-        action = described_class.run(args)
+        action = described_class.perform(args)
         expect(action.success?).to eq(true)
-        expect(action.render).to eq({
+        expect(action.response).to eq({
           json: {
             name: 'Clean kitchen'
           },
@@ -32,9 +32,9 @@ RSpec.describe Create do
       let(:args) { { headers: {} } }
 
       it 'response is an error' do
-        action = described_class.run(args)
+        action = described_class.perform(args)
         expect(action.failure?).to eq(true)
-        expect(action.render).to eq({
+        expect(action.response).to eq({
           json: {
             errors: {
               headers: {
@@ -53,9 +53,9 @@ RSpec.describe Create do
       end
 
       it 'response is an error' do
-        action = described_class.run(args)
+        action = described_class.perform(args)
         expect(action.failure?).to eq(true)
-        expect(action.render).to eq({
+        expect(action.response).to eq({
           json: {
             errors: {
               name: 'invalid'
@@ -72,9 +72,9 @@ RSpec.describe Create do
       end
 
       it 'response is an error' do
-        action = described_class.run(args)
+        action = described_class.perform(args)
         expect(action.failure?).to eq(true)
-        expect(action.render).to eq({
+        expect(action.response).to eq({
           json: {
             errors: {
               params: {

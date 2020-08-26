@@ -15,9 +15,9 @@ class Create < Aktion::HTTP
   def perform
     item = Item.new(item_params)
     if item.save
-      success(item)
+      success(:ok, item)
     else
-      fail(:unprocessable_entity, item.errors)
+      failure(:unprocessable_entity, item.errors)
     end
   end
 

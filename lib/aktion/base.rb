@@ -6,7 +6,7 @@ module Aktion
     class << self
       include Hooks
 
-      def run(args = {})
+      def perform(args = {})
         args = default_args.merge(args)
 
         failed_action = before_actions.detect do |action|
@@ -64,7 +64,7 @@ module Aktion
         request.merge!(validation.to_h) if validation
         true
       else
-        fail(:bad_request, allowed_validation_errors(validation.errors.to_h))
+        failure(:bad_request, allowed_validation_errors(validation.errors.to_h))
         false
       end
     end
@@ -77,10 +77,6 @@ module Aktion
     end
 
     def response
-      { json: json, status: status }
-    end
-
-    def render
       { json: json.to_h, status: status }
     end
 
@@ -108,12 +104,12 @@ module Aktion
       self.json[:errors]
     end
 
-    def success(json, status = nil)
-      self.json = json
-      self.status = status if status
+    def success(status, json = nil)
+      self.json = json.to_h if json
+      self.status = status
     end
 
-    def fail(status, errors = nil)
+    def failure(status, errors = nil)
       @failure = true
       self.status = status
       self.json[:errors] = errors if errors

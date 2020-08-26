@@ -8,6 +8,6 @@ class Authenticate < Aktion::HTTP
   end
 
   def perform
-    fail(:unauthorized) unless request[:current_user] = User.find_by(email: headers[:email])
+    failure(:unauthorized) unless request[:current_user] = User.find_by(email: headers[:email])
   end
 end
