@@ -1,2 +1,2 @@
-class Users::Create < Aktion::Base
+class Users::Create < ApplicationAction
 end
