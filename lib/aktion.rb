@@ -1,6 +1,7 @@
 require "aktion/version"
+require "aktion/core"
 require "aktion/base"
-require "aktion/http"
+require "aktion/controller"
 
 module Aktion
   class Error < StandardError; end

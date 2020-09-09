@@ -1,7 +1,7 @@
 require 'examples/item'
 require 'examples/authenticate'
 
-class Create < Aktion::HTTP
+class Create < Aktion::Base
   before Authenticate
 
   schema do
