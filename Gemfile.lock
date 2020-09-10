@@ -1,8 +1,9 @@
 PATH
   remote: .
   specs:
-    aktion (0.1.0)
+    aktion (0.1.1)
       dry-schema
+      thor
 
 GEM
   remote: https://rubygems.org/
@@ -83,7 +84,7 @@ GEM
       concurrent-ruby (~> 1.0)
       dry-core (~> 0.2)
       dry-equalizer (~> 0.2)
-    dry-schema (1.5.3)
+    dry-schema (1.5.4)
       concurrent-ruby (~> 1.0)
       dry-configurable (~> 0.8, >= 0.8.3)
       dry-core (~> 0.4)
@@ -118,6 +119,7 @@ GEM
     nio4r (2.5.3)
     nokogiri (1.10.10)
       mini_portile2 (~> 2.4.0)
+    prettier (0.20.1)
     pry (0.13.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -195,6 +197,7 @@ PLATFORMS
 DEPENDENCIES
   aktion!
   bundler (~> 2.0)
+  prettier
   pry
   rails
   rake (~> 10.0)
