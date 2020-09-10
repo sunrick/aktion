@@ -1,5 +1,5 @@
-require "dry/schema"
-require "aktion/hooks"
+require 'dry/schema'
+require 'aktion/hooks'
 
 module Aktion
   class Core
@@ -9,32 +9,34 @@ module Aktion
       def perform(args = {})
         args = default_args.merge(args)
 
-        failed_action = before_actions.detect do |action|
-          instance = action.new(args)
-          if instance.validate
-            instance.perform
-          else 
-            break instance
+        failed_action =
+          before_actions.detect do |action|
+            instance = action.new(args)
+            if instance.validate
+              instance.perform
+            else
+              break instance
+            end
           end
-        end
 
         return failed_action if failed_action
 
         instance = new(args)
-        if instance.validate 
+        if instance.validate
           instance.perform
         else
           return instance
         end
 
-        failed_action = after_actions.detect do |action|
-          instance = action.new(args)
-          if instance.validate
-            instance.perform
-          else 
-            break instance
+        failed_action =
+          after_actions.detect do |action|
+            instance = action.new(args)
+            if instance.validate
+              instance.perform
+            else
+              break instance
+            end
           end
-        end
 
         return failed_action if failed_action
 
@@ -60,6 +62,7 @@ module Aktion
 
     def validate
       validation = self.class.schema&.call(request)
+
       if validation.nil? || validation.success?
         request.merge!(validation.to_h) if validation
         true
@@ -73,8 +76,7 @@ module Aktion
       errors
     end
 
-    def perform
-    end
+    def perform; end
 
     def response
       { json: json.to_h, status: status }

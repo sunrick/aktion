@@ -14,11 +14,7 @@ class Create < Aktion::Base
 
   def perform
     item = Item.new(item_params)
-    if item.save
-      success(:ok, item)
-    else
-      failure(:unprocessable_entity, item.errors)
-    end
+    item.save ? success(:ok, item) : failure(:unprocessable_entity, item.errors)
   end
 
   private

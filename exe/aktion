@@ -1,13 +1,13 @@
 #!/usr/bin/env ruby
 
-require "bundler/setup"
+require 'bundler/setup'
 require 'thor'
-require "aktion/cli"
+require 'aktion/cli'
 
 class MyThorCommand < Thor
-  desc "foo", "Prints foo"
+  desc 'foo', 'Prints foo'
   def foo
-    puts "foo"
+    puts 'foo'
   end
 end
 

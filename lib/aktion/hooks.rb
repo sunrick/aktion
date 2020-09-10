@@ -20,11 +20,11 @@ module Aktion
       subclass.inherit_before_actions(before_actions)
       subclass.inherit_after_actions(after_actions)
     end
-  
+
     def inherit_before_actions(child_before_actions)
       before_actions.concat(child_before_actions)
     end
-    
+
     def inherit_after_actions(child_after_actions)
       after_actions.concat(child_after_actions)
     end
