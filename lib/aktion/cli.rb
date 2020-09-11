@@ -21,10 +21,8 @@ module Aktion
     register 'version', Commands::Version, aliases: %w[v -v --version]
     register 'install', Commands::Install
     register 'create', Commands::Create
-    register 'echo', Commands::Echo
     register 'start', Commands::Start
     register 'stop', Commands::Stop
-    register 'exec', Commands::Exec
 
     register 'generate', aliases: %w[g] do |prefix|
       prefix.register 'config', Commands::Generate::Configuration
