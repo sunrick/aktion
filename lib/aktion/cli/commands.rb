@@ -19,16 +19,17 @@ module Aktion
         argument :action, desc: 'Action'
 
         def call(module_name:, action:, **)
+          Dry::CLI::Utils::Files.write("./actions/#{module_name}/#{action}.rb",ERB.new(
+            File.read(
+              File.join(File.dirname(__FILE__), 'templates/aktion.erb')
+            )
+          ).result_with_hash(
+            { module_name: module_name.capitalize, action: action.capitalize }
+          ))
           Aktion::CLI::Display.start do
             write module_name
             write action
-            write ERB.new(
-                    File.read(
-                      File.join(File.dirname(__FILE__), 'templates/aktion.erb')
-                    )
-                  ).result_with_hash(
-                    { module_name: module_name, action: action }
-                  )
+            write 'dog'
           end
         end
       end
