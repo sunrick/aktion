@@ -28,9 +28,10 @@ module Aktion
 
         desc Paint['Install', :red]
 
-        argument :framework, desc: 'Framework'
+        argument :framework,
+                 default: 'rails', desc: 'Framework', values: %w[rails]
 
-        def call(framework: 'rails', **)
+        def call(framework:, **)
           dog = self
           Aktion::CLI::Display.start do |d|
             d.spinner(status: 'Configuring Aktion...') do |s|
@@ -70,41 +71,6 @@ module Aktion
         end
       end
 
-      class Echo < Dry::CLI::Command
-        desc Paint['Print input', :red]
-
-        argument :input, desc: 'Input to print'
-
-        example [
-                  "             # Prints 'wuh?'",
-                  "hello, folks # Prints 'hello, folks'"
-                ]
-
-        def call(input: nil, **)
-          if input.nil?
-            puts 'wuh?'
-          else
-            Display.create do
-              spinner(status: 'Calculating...') do |s|
-                sleep 5
-                s.status = 'Calculating... Done!'
-              end
-
-              indent do
-                spinner { sleep 1 }
-                write 'hi'
-              end
-
-              write 'hi'
-              indent do
-                write 'hi'
-                indent { write 'hi' }
-              end
-            end
-          end
-        end
-      end
-
       class Start < Dry::CLI::Command
         desc 'Start Foo machinery'
 
@@ -124,19 +90,6 @@ module Aktion
 
         def call(**options)
           puts "stopped - graceful: #{options.fetch(:graceful)}"
-        end
-      end
-
-      class Exec < Dry::CLI::Command
-        desc 'Execute a task'
-
-        argument :task,
-                 type: :string, required: true, desc: 'Task to be executed'
-        argument :dirs,
-                 type: :array, required: false, desc: 'Optional directories'
-
-        def call(task:, dirs: [], **)
-          puts "exec - task: #{task}, dirs: #{dirs.inspect}"
         end
       end
 
