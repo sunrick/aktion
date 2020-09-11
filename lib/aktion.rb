@@ -1,5 +1,4 @@
 require 'aktion/version'
-require 'aktion/cli'
 require 'aktion/core'
 require 'aktion/base'
 require 'aktion/controller'
