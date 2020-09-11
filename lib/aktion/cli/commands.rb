@@ -3,12 +3,53 @@ require 'dry/cli/utils/files'
 
 module Aktion
   module CLI
+    UTILS = Dry::CLI::Utils::Files
+
+    class File
+      def self.create(source:, destination:, locals: {})
+        source_content =
+          ::File.read(::File.join(::File.dirname(__FILE__), source))
+        processed_content = ERB.new(source_content).result_with_hash(locals)
+        UTILS.write(destination, processed_content)
+      end
+    end
+
     module Commands
       class Version < Dry::CLI::Command
         desc 'Print version'
 
         def call(*)
           puts '1.0.0'
+        end
+      end
+
+      class Install < Dry::CLI::Command
+        PATHS = { 'rails' => 'config/initializers/aktion.rb' }
+
+        desc Paint['Install', :red]
+
+        argument :framework, desc: 'Framework'
+
+        def call(framework: 'rails', **)
+          dog = self
+          Aktion::CLI::Display.start do
+            spinner(status: 'Configuring Aktion...') do |s|
+              File.create(
+                source: '/templates/aktion.erb', destination: PATHS[framework]
+              )
+              s.status = "#{s.status} Done!"
+            end
+            indent { write "Created file: #{PATHS[framework]}" }
+            dog.rails
+          end
+        end
+
+        def rails
+          UTILS.inject_line_after(
+            'spec/dummy/app/controllers/application_controller.rb',
+            'ApplicationController',
+            '  include Aktion::Controller'
+          )
         end
       end
 
@@ -19,13 +60,13 @@ module Aktion
         argument :action, desc: 'Action'
 
         def call(module_name:, action:, **)
-          Dry::CLI::Utils::Files.write("./actions/#{module_name}/#{action}.rb",ERB.new(
-            File.read(
-              File.join(File.dirname(__FILE__), 'templates/aktion.erb')
-            )
-          ).result_with_hash(
-            { module_name: module_name.capitalize, action: action.capitalize }
-          ))
+          File.create(
+            source: './templates/action.erb',
+            destination: "./actions/#{module_name}/#{action}.rb",
+            locals: {
+              module_name: module_name.capitalize, action: action.capitalize
+            }
+          )
           Aktion::CLI::Display.start do
             write module_name
             write action
