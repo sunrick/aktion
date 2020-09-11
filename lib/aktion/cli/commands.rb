@@ -1,3 +1,6 @@
+require 'erb'
+require 'dry/cli/utils/files'
+
 module Aktion
   module CLI
     module Commands
@@ -6,6 +9,22 @@ module Aktion
   
         def call(*)
           puts '1.0.0'
+        end
+      end
+
+      class Create < Dry::CLI::Command
+        desc Paint['Generate action', :red]
+
+        argument :module_name, desc: 'Module'
+        argument :action, desc: 'Action'
+
+        def call(module_name:, action:, **)
+          
+          Aktion::CLI::Display.start do
+            write module_name
+            write action
+            write  ERB.new(File.read(File.join(File.dirname(__FILE__), 'templates/aktion.erb'))).result_with_hash({ module_name: module_name, action: action })
+          end
         end
       end
   

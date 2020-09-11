@@ -19,6 +19,7 @@ module Aktion
     extend Dry::CLI::Registry
 
     register 'version', Commands::Version, aliases: %w[v -v --version]
+    register 'create', Commands::Create
     register 'echo', Commands::Echo
     register 'start', Commands::Start
     register 'stop', Commands::Stop
