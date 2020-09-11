@@ -1,14 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'bundler/setup'
-require 'thor'
+require 'dry/cli'
 require 'aktion/cli'
 
-class MyThorCommand < Thor
-  desc 'foo', 'Prints foo'
-  def foo
-    puts 'foo'
-  end
-end
-
-MyThorCommand.start
+Dry::CLI.new(Aktion::CLI).call
