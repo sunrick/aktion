@@ -7,8 +7,8 @@ module Aktion
         Whirly.configure(spinner: 'dots', stop: '✅', color: false)
       end
 
-      def self.start(&block)
-        new.instance_eval(&block)
+      def self.start
+        yield(new)
       end
 
       def output

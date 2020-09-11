@@ -32,15 +32,15 @@ module Aktion
 
         def call(framework: 'rails', **)
           dog = self
-          Aktion::CLI::Display.start do
-            spinner(status: 'Configuring Aktion...') do |s|
+          Aktion::CLI::Display.start do |d|
+            d.spinner(status: 'Configuring Aktion...') do |s|
               File.create(
                 source: '/templates/aktion.erb', destination: PATHS[framework]
               )
               s.status = "#{s.status} Done!"
             end
-            indent { write "Created file: #{PATHS[framework]}" }
-            dog.rails
+            d.indent { d.write("Created file: #{PATHS[framework]}") }
+            rails
           end
         end
 
@@ -67,11 +67,6 @@ module Aktion
               module_name: module_name.capitalize, action: action.capitalize
             }
           )
-          Aktion::CLI::Display.start do
-            write module_name
-            write action
-            write 'dog'
-          end
         end
       end
 
