@@ -11,7 +11,7 @@ module Aktion
         )
       end
   
-      def self.create(&block)
+      def self.start(&block)
         new.instance_eval(&block)
       end
   
