@@ -33,8 +33,10 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = %w[lib]
 
-  spec.add_dependency 'dry-schema'
-  spec.add_dependency 'thor'
+  spec.add_runtime_dependency 'dry-schema'
+  spec.add_runtime_dependency 'dry-cli'
+  spec.add_runtime_dependency 'paint'
+  spec.add_runtime_dependency 'whirly'
 
   spec.add_development_dependency 'bundler', '~> 2.0'
   spec.add_development_dependency 'rake', '~> 10.0'

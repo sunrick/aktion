@@ -1,9 +1,11 @@
 PATH
   remote: .
   specs:
-    aktion (0.1.1)
+    aktion (0.1.0)
+      dry-cli
       dry-schema
-      thor
+      paint
+      whirly
 
 GEM
   remote: https://rubygems.org/
@@ -68,6 +70,8 @@ GEM
     concurrent-ruby (1.1.7)
     crass (1.0.6)
     diff-lcs (1.4.4)
+    dry-cli (0.6.0)
+      concurrent-ruby (~> 1.0)
     dry-configurable (0.11.6)
       concurrent-ruby (~> 1.0)
       dry-core (~> 0.4, >= 0.4.7)
@@ -119,6 +123,7 @@ GEM
     nio4r (2.5.3)
     nokogiri (1.10.10)
       mini_portile2 (~> 2.4.0)
+    paint (2.2.0)
     prettier (0.20.1)
     pry (0.13.1)
       coderay (~> 1.1)
@@ -186,9 +191,12 @@ GEM
     thread_safe (0.3.6)
     tzinfo (1.2.7)
       thread_safe (~> 0.1)
+    unicode-display_width (1.7.0)
     websocket-driver (0.7.3)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
+    whirly (0.2.6)
+      unicode-display_width (~> 1.1)
     zeitwerk (2.4.0)
 
 PLATFORMS
