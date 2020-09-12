@@ -6,11 +6,11 @@ module Aktion
     UTILS = Dry::CLI::Utils::Files
 
     class File
-      def self.create(source:, destination:, locals: {})
+      def self.create(source:, target:, locals: {})
         source_content =
           ::File.read(::File.join(::File.dirname(__FILE__), source))
         processed_content = ERB.new(source_content).result_with_hash(locals)
-        UTILS.write(destination, processed_content)
+        UTILS.write(target, processed_content)
       end
     end
 
@@ -28,29 +28,34 @@ module Aktion
 
         desc Paint['Install', :red]
 
-        argument :framework,
-                 default: 'rails', desc: 'Framework', values: %w[rails]
+        argument :framework, default: 'rails', desc: 'Framework'
 
         def call(framework:, **)
-          dog = self
-          Aktion::CLI::Display.start do |d|
-            d.spinner(status: 'Configuring Aktion...') do |s|
-              File.create(
-                source: '/templates/aktion.erb', destination: PATHS[framework]
-              )
-              s.status = "#{s.status} Done!"
-            end
-            d.indent { d.write("Created file: #{PATHS[framework]}") }
+          case framework
+          when 'rails'
             rails
+          else
+            Aktion::CLI::Display.start { |d| d.write('invalid') }
           end
         end
 
         def rails
-          UTILS.inject_line_after(
-            'spec/dummy/app/controllers/application_controller.rb',
-            'ApplicationController',
-            '  include Aktion::Controller'
-          )
+          Aktion::CLI::Display.start do |display|
+            display.spinner(status: 'Configuring Aktion...') do |s|
+              File.create(
+                source: '/templates/aktion.erb', target: PATHS[framework]
+              )
+              s.status = "#{s.status} Done!"
+            end
+            display.indent do
+              display.write("Created file: #{PATHS[framework]}")
+            end
+            UTILS.inject_line_after(
+              'spec/dummy/app/controllers/application_controller.rb',
+              'ApplicationController',
+              '  include Aktion::Controller'
+            )
+          end
         end
       end
 
@@ -63,33 +68,11 @@ module Aktion
         def call(module_name:, action:, **)
           File.create(
             source: './templates/action.erb',
-            destination: "./actions/#{module_name}/#{action}.rb",
+            target: "./actions/#{module_name}/#{action}.rb",
             locals: {
               module_name: module_name.capitalize, action: action.capitalize
             }
           )
-        end
-      end
-
-      class Start < Dry::CLI::Command
-        desc 'Start Foo machinery'
-
-        argument :root, required: true, desc: 'Root directory'
-
-        example ['path/to/root # Start Foo at root directory']
-
-        def call(root:, **)
-          puts "started - root: #{root}"
-        end
-      end
-
-      class Stop < Dry::CLI::Command
-        desc 'Stop Foo machinery'
-
-        option :graceful, type: :boolean, default: true, desc: 'Graceful stop'
-
-        def call(**options)
-          puts "stopped - graceful: #{options.fetch(:graceful)}"
         end
       end
 
