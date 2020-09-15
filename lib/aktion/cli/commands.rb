@@ -51,7 +51,7 @@ module Aktion
               display.write("Created file: #{PATHS[framework]}")
             end
             UTILS.inject_line_after(
-              'spec/dummy/app/controllers/application_controller.rb',
+              './app/controllers/application_controller.rb',
               'ApplicationController',
               '  include Aktion::Controller'
             )
@@ -68,10 +68,15 @@ module Aktion
         def call(module_name:, action:, **)
           File.create(
             source: './templates/action.erb',
-            target: "./actions/#{module_name}/#{action}.rb",
+            target: ".app/actions/#{module_name}/#{action}.rb",
             locals: {
               module_name: module_name.capitalize, action: action.capitalize
             }
+          )
+          File.create(
+            source: './templates/spec.erb',
+            target: "./spec/actions/#{module_name}/#{action}_spec.rb",
+            locals: { klass: "#{module_name.capitalize}::#{action.capitalize}" }
           )
         end
       end
