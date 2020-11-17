@@ -1,8 +1,12 @@
 # Aktion
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/aktion`. To experiment with that code, run `bin/console` for an interactive prompt.
+This was a library I was working on for a while.
 
-TODO: Delete this and the text above, and describe your gem
+I wanted to see what it was like to try to shove single class based actions into Rails. I think the API I ended up with is pretty elegant.
+
+I haven't had time to work on it more but I'd like to clean this up and actually release it as a gem in the future.
+
+For now I'm leaving it up here to showcase some WIP code that I have.
 
 ## Installation
 
@@ -22,7 +26,100 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+### Main objectives
+
+- Simple and intuitive API
+- Self Documenting
+- Easy to test
+- Use anywhere (Good enough)
+- Opt in performance enhancements
+
+#### Simple and Intuitive API
+
+```ruby
+# app/actions/users/create.rb
+class Users::Create < Aktion::Base
+  attr_accessor :user
+
+  schema do
+    required(:params).hash do
+      required(:email).filled
+    end
+  end
+
+  def perform
+    self.user = User.new(email: params[:email])
+    if user.save
+      success(:created, user)
+    else
+      failure(:unprocessable_entity, user.errors.messages)
+    end
+  end
+end
+```
+
+```ruby
+RSpec.describe Users::Create do
+  let(:args) do
+    {
+      params: { email: 'sunrick@aktion.gem' }
+    }
+  end
+
+  context 'good request' do
+    it 'should save the user' do
+      action = described_class.perform(args)
+      expect(action.success?).to eq(true)
+      expect(action.response).to eq(
+        json: { email: 'sunrick@aktion.gem' },
+        status: :created
+      )
+      expect(User.count).to eq(1)
+    end
+  end
+
+  context 'bad request' do
+    before { args[:params][:email] = '' }
+
+    it 'should fail' do
+      action = described_class.perform(args)
+      expect(action.failure?).to eq(true)
+      expect(action.response).to eq(
+        json: errors: { email: ['missing'] },
+        status: :unprocessable_entity
+      )
+      expect(User.count).to eq(0)
+    end
+  end
+end
+```
+
+```ruby
+class ApplicationController
+  include Aktion::Controller
+end
+
+class UsersController < ApplicationController
+  aktions [:create]
+end
+
+Rails.application.routes.draw do
+  resources :users, only: [:create]
+end
+```
+
+```ruby
+Users::Create.perform(
+  params:  { email: 'sunrick@aktion.gem' },
+  options: { async: true }
+)
+```
+
+```
+bundle exec aktion g users:create
+bundle exec aktion g users:index,create,show,update,destroy
+bundle exec aktion g users
+```
 
 ## Development
 
