@@ -1,2 +1,1 @@
-class ApplicationAction < Aktion::Base
-end
+class ApplicationAction < Aktion::Base; end

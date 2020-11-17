@@ -1,3 +1,3 @@
 class Admin::UsersController < ApplicationController
-  aktions [:create]
+  aktions %i[create]
 end

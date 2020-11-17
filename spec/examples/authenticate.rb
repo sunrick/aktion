@@ -1,13 +1,11 @@
 require 'examples/user'
 
 class Authenticate < Aktion::Base
-  schema do
-    required(:headers).hash do
-      required(:email).filled(:string)
-    end
-  end
+  schema { required(:headers).hash { required(:email).filled(:string) } }
 
   def perform
-    failure(:unauthorized) unless request[:current_user] = User.find_by(email: headers[:email])
+    unless request[:current_user] = User.find_by(email: headers[:email])
+      failure(:unauthorized)
+    end
   end
 end
