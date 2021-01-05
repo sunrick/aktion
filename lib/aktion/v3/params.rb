@@ -15,20 +15,13 @@ module Aktion::V3
 
     def add(key, type, opts = {}, &block)
       opts.merge!(required: true)
-
-      children <<
-        case type
-        when :hash
-          Param::Hash.build(key, type, opts, &block)
-        when :array
-          Param::Array.build(key, type, opts, &block)
-        else
-          Param::Base.build(key, type, opts, &block)
-        end
+      children << Param.build(key, type, opts, &block)
     end
 
     def call(params, errors)
-      children.each { |child| child.call(params: params, errors: errors) }
+      children.each do |child|
+        child.call(k: child.key, value: params[child.key], errors: errors)
+      end
       self
     end
   end

@@ -1,8 +1,6 @@
 class Downcase < Aktion::V3::Base
   params { add :name, :string }
 
-  # validations { error(:name, 'is missing') { value.nil? } }
-
   def perform
     success :ok, name: params[:name].downcase
   end

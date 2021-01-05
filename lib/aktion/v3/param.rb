@@ -1,158 +1,88 @@
 module Aktion::V3
-  module Param
-    class Base
-      def self.build(key, type, opts = {}, &block)
-        opts = options(key, name, opts)
+  class Param
+    def self.build(key, type, opts = {}, &block)
+      opts = options(key, type, opts)
 
-        instance = new(opts)
+      instance = new(opts)
 
-        instance.instance_eval(&block) if block_given?
+      instance.instance_eval(&block) if block_given?
 
-        instance
-      end
-
-      def self.options(key, name, opts)
-        {
-          key: key,
-          type: name || :any,
-          default: nil,
-          description: nil,
-          example: nil,
-          notes: nil,
-          children: [],
-          required: false
-        }.merge(opts)
-      end
-
-      attr_accessor :key,
-                    :type,
-                    :default,
-                    :description,
-                    :example,
-                    :notes,
-                    :children,
-                    :required
-
-      def initialize(opts = {})
-        opts.each { |key, value| self.send("#{key}=", value) }
-      end
-
-      def get(key, params)
-        keys = key.to_s.split('.').map(&:to_sym)
-        params.dig(*keys)
-      end
-
-      def last(key)
-        key.to_s.split('.').map(&:to_sym).last
-      end
-
-      def required?
-        @required
-      end
-
-      def add(k, type, opts = {}, &block)
-        opts.merge!(required: true)
-        raise 'cannot do that'
-      end
-
-      def call(params:, errors:, item: nil, index: nil)
-        if index
-          k = key.gsub('%I%', index.to_s)
-          errors.add(k, 'is missing') if required? && item.nil?
-        else
-          value = get(key, params)
-          errors.add(key, 'is missing') if required? && value.nil?
-        end
-        self
-      end
+      instance
     end
 
-    class Hash < Base
-      def add(k, type, opts = {}, &block)
-        opts.merge!(required: true)
-        k = "#{key}.#{k}"
-        children <<
-          case type
-          when :hash
-            Param::Hash.build(k, type, opts, &block)
-          when :array
-            Param::Array.build(k, type, opts, &block)
-          else
-            Param::Base.build(k, type, opts, &block)
-          end
-      end
-
-      def call(params:, errors:, item: nil, index: nil)
-        if index
-          k = last(key)
-          value = item && item[k]
-          k = key.gsub('%I%', index.to_s)
-        else
-          k = key
-          value = get(k, params)
-        end
-
-        if required? && value.nil? || value.empty?
-          errors.add(k, 'is missing')
-        else
-          children.each do |child|
-            child.call(params: params, errors: errors, item: item, index: index)
-          end
-        end
-        self
-      end
+    def self.options(key, type, opts)
+      {
+        key: key,
+        type: type || :any,
+        default: nil,
+        description: nil,
+        example: nil,
+        notes: nil,
+        children: [],
+        required: false
+      }.merge(opts)
     end
 
-    class Array < Base
-      def add(*args, &block)
-        k, type, opts =
-          case args.length
-          when 1
-            ["#{key}.%I%", args[0], {}]
-          when 2
-            ["#{key}.%I%.#{args[0]}", args[1], {}]
-          else
-            args
-          end
+    attr_accessor :key,
+                  :type,
+                  :default,
+                  :description,
+                  :example,
+                  :notes,
+                  :children,
+                  :required
 
-        opts.merge!(required: true)
+    def initialize(opts = {})
+      opts.each { |key, value| self.send("#{key}=", value) }
+    end
 
-        children <<
-          case type
-          when :hash
-            Param::Hash.build(k, type, opts, &block)
-          when :array
-            Param::Array.build(k, type, opts, &block)
-          else
-            Param::Base.build(k, type, opts, &block)
-          end
+    def required?
+      @required
+    end
+
+    def add(k, type, opts = {}, &block)
+      opts.merge!(required: true)
+      children << self.class.build(k, type, opts, &block)
+    end
+
+    def call(k:, value:, errors:)
+      case type
+      when :hash
+        if value.nil? || value.empty?
+          errors.add(k, 'is missing')
+          return
+        end
+      when :array
+        if value.nil? || value.empty?
+          errors.add(k, 'is missing')
+          return
+        end
+      else
+        if value.nil?
+          errors.add(k, 'is missing')
+          return
+        end
       end
 
-      def call(params:, errors:, item: nil, index: nil)
-        if index
-          k = last(key)
-          items = item && item[k]
-          k = key.gsub('%I%', index.to_s)
-        else
-          k = key
-          items = get(k, params)
-        end
+      children.each do |child|
+        case type
+        when :hash
+          child_key = "#{k}.#{child.key}"
+          child_value = value[child.key] if child.key
+          child.call(k: child_key, value: child_value, errors: errors)
+        when :array
+          value.each.with_index do |child_value, index|
+            child_key = "#{k}.#{index}"
 
-        if required? && items.nil? || items.empty?
-          errors.add(k, 'is missing')
-        else
-          items.each.with_index do |item, index|
-            children.each do |child|
-              child.call(
-                params: params,
-                errors: errors,
-                item: item,
-                index: index
-              )
+            if required? && (child_value.nil? || child_value.empty?)
+              errors.add(child_key, 'is missing')
+            elsif !(child_value.nil? || child_value.empty?)
+              child_value = child_value[child.key] if child.key
+              child_key = "#{child_key}.#{child.key}" if child.key
+              child.call(k: child_key, value: child_value, errors: errors)
             end
           end
         end
-        self
       end
     end
   end
