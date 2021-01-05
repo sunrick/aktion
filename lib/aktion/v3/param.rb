@@ -88,7 +88,8 @@ module Aktion::V3
           value = item && item[k]
           k = key.gsub('%I%', index.to_s)
         else
-          value = get(key, params)
+          k = key
+          value = get(k, params)
         end
 
         if required? && value.nil? || value.empty?
