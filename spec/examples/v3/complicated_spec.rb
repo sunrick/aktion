@@ -125,12 +125,31 @@ RSpec.describe Aktion::V3::Params do
         end
       end
     end
-    let(:params) { { dogs: [nil] } }
 
-    specify do
-      expect(errors.to_h).to eq(
-        dogs: { "0": { chicken: 'is missing', name: 'is missing' } }
-      )
+    context 'array with nil' do
+      let(:params) { { dogs: [nil] } }
+
+      specify do
+        expect(errors.to_h).to eq(
+          dogs: { "0": { chicken: 'is missing', name: 'is missing' } }
+        )
+      end
+    end
+
+    context 'array with missing name' do
+      let(:params) do
+        {
+          dogs: [
+            { name: nil, chicken: { name: 'Chicken', hobbies: ['soccer'] } }
+          ]
+        }
+      end
+
+      specify do
+        expect(errors.to_h).to eq(
+          dogs: { "0": { name: 'is missing', chicken: 'is missing' } }
+        )
+      end
     end
   end
 end

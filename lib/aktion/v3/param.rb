@@ -129,10 +129,17 @@ module Aktion::V3
       end
 
       def call(params:, errors:, item: nil, index: nil)
-        items = get(key, params)
+        if index
+          k = last(key)
+          items = item && item[k]
+          k = key.gsub('%I%', index.to_s)
+        else
+          k = key
+          items = get(k, params)
+        end
 
         if required? && items.nil? || items.empty?
-          errors.add(key, 'is missing')
+          errors.add(k, 'is missing')
         else
           items.each.with_index do |item, index|
             children.each do |child|
