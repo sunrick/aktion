@@ -13,9 +13,17 @@ module Aktion::V3
       self.children = []
     end
 
-    def add(key, type, opts = {}, &block)
+    def required(k, type, opts = {}, &block)
       opts.merge!(required: true)
-      children << Param.build(key, type, opts, &block)
+      add(k, type, opts, &block)
+    end
+
+    def optional(k, type, opts = {}, &block)
+      add(k, type, opts, &block)
+    end
+
+    def add(k, type, opts = {}, &block)
+      children << Param.build(k, type, opts, &block)
     end
 
     def call(params, errors)

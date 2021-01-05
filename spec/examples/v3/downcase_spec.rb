@@ -1,5 +1,5 @@
 class Downcase < Aktion::V3::Base
-  params { add :name, :string }
+  params { required :name, :string }
 
   def perform
     success :ok, name: params[:name].downcase

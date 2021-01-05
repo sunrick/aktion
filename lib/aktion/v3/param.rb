@@ -40,8 +40,16 @@ module Aktion::V3
       @required
     end
 
-    def add(k, type, opts = {}, &block)
+    def required(k, type, opts = {}, &block)
       opts.merge!(required: true)
+      add(k, type, opts, &block)
+    end
+
+    def optional(k, type, opts = {}, &block)
+      add(k, type, opts, &block)
+    end
+
+    def add(k, type, opts = {}, &block)
       children << self.class.build(k, type, opts, &block)
     end
 
@@ -49,17 +57,17 @@ module Aktion::V3
       case type
       when :hash
         if value.nil? || value.empty?
-          errors.add(k, 'is missing')
+          errors.add(k, 'is missing') if required?
           return
         end
       when :array
         if value.nil? || value.empty?
-          errors.add(k, 'is missing')
+          errors.add(k, 'is missing') if required?
           return
         end
       else
         if value.nil?
-          errors.add(k, 'is missing')
+          errors.add(k, 'is missing') if required?
           return
         end
       end
