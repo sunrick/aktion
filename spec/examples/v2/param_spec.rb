@@ -73,4 +73,22 @@ RSpec.describe Aktion::V2::Param do
       end
     end
   end
+
+  context '#call' do
+    context 'with string param' do
+      let(:param) { described_class.build(:name, :string) }
+
+      context 'with string value' do
+        let(:subject) { param.call('Rickard') }
+
+        specify { expect(subject).to eq([:ok, 'Rickard']) }
+      end
+
+      context 'with nil value' do
+        let(:subject) { param.call(nil) }
+
+        specify { expect(subject).to eq([:ok, nil]) }
+      end
+    end
+  end
 end

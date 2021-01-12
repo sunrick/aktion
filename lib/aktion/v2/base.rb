@@ -1,31 +1,33 @@
+require 'aktion/v2/utils'
 require 'aktion/v2/error'
 require 'aktion/v2/param'
 
 module Aktion::V2
   class Base
     def self.params
-      @@params = []
+      @@params ||= []
     end
 
     def self.errors
-      @@errors = []
+      @@errors ||= []
     end
 
-    # def self.param
-    #   params << Param.build()
-    # end
+    def self.param(*args, &block)
+      params << Param.build(*args, &block)
+    end
 
-    def self.error(key = nil, message = nil, &block)
-      errors << Error.build(key: key, message: message, &block)
+    def self.error(*args, &block)
+      errors << Error.build(*args, &block)
     end
 
     def self.perform(options = {})
       instance = new(options)
 
+      instance.transform
       instance.validate
 
       if instance.errors?
-        instance.failure(:bad_request, instance.errors.to_h)
+        instance.failure(:unprocessable_entity, instance.errors.to_h)
       else
         instance.perform
       end
@@ -33,26 +35,37 @@ module Aktion::V2
       instance
     end
 
-    attr_accessor :options, :status, :json, :errors
+    attr_accessor :options, :params, :status, :json, :errors
 
     def initialize(options = {})
       self.options = options
+      self.params = options
+      self.errors = {}
     end
 
-    def params
-      options
+    def transform
+      params.each do |key, original_value|
+        status, value = find_param(key)&.call(original_value)
+        if status == :ok
+          params[key] = value
+        elsif !status.nil?
+          raise 'implement me'
+        end
+      end
+    end
+
+    def find_param(key)
+      self.class.params.detect { |p| p.key == key }
     end
 
     def validate
-      self.errors = self.class.params.errors?(options)
-    end
-
-    def errors
-      @errors ||= Errors.new
+      results =
+        self.class.errors.map { |error| error.call(params) }.select { |e| e }
+      results.each { |r| Utils.deep_merge(errors, r) }
     end
 
     def errors?
-      errors.present?
+      !errors.empty?
     end
 
     def success(status, object)
@@ -75,7 +88,7 @@ module Aktion::V2
     end
 
     def response
-      { status: self.status, json: self.json }
+      [self.status, self.json]
     end
   end
 end

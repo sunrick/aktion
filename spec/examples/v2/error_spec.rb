@@ -2,7 +2,7 @@ require 'spec_helper'
 
 # TODO: Arrays
 RSpec.describe Aktion::V2::Error do
-  context '.call' do
+  context '#call' do
     let(:subject) { error.call(params) }
 
     shared_examples :string_presence_tests do
