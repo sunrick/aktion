@@ -83,6 +83,16 @@ RSpec.describe Aktion::V2::Error do
         expect { subject }.to raise_error(Aktion::V2::Errors::MissingKey)
       end
     end
+
+    context 'with missing message' do
+      let(:error) { described_class.build(:name) { message if value.nil? } }
+
+      let(:params) { Hash[name: nil] }
+
+      specify do
+        expect { subject }.to raise_error(Aktion::V2::Errors::MissingMessage)
+      end
+    end
   end
 
   context 'with multiple messages' do
@@ -191,9 +201,9 @@ RSpec.describe Aktion::V2::Error do
     context 'different keys' do
       let(:error) do
         described_class.build do
-          if params.dig(:options, :name).nil?
-            message('options.name', 'is missing')
-          end
+          name = params.dig(:options, :name)
+          message('options.name', 'is missing') if name.nil?
+          message('options.name', 'must be Rickard') if name != 'Rickard'
           if params.dig(:options, :age) <= 0
             message('options.age', 'must be greater than 0')
           end
@@ -211,7 +221,10 @@ RSpec.describe Aktion::V2::Error do
 
         specify do
           expect(subject).to eq(
-            options: { name: ['is missing'], age: ['must be greater than 0'] }
+            options: {
+              name: ['is missing', 'must be Rickard'],
+              age: ['must be greater than 0']
+            }
           )
         end
       end
@@ -219,7 +232,11 @@ RSpec.describe Aktion::V2::Error do
       context 'only age is valid' do
         let(:params) { Hash[options: { name: nil, age: 30 }] }
 
-        specify { expect(subject).to eq(options: { name: ['is missing'] }) }
+        specify do
+          expect(subject).to eq(
+            options: { name: ['is missing', 'must be Rickard'] }
+          )
+        end
       end
 
       context 'only name is valid' do

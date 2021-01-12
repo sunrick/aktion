@@ -16,14 +16,16 @@ module Aktion::V2
       self.called = true
 
       k, msg =
-        if params.length == 1
+        case params.length
+        when 0
+          raise Errors::MissingMessage if msg.nil?
+        when 1
           [key, params[0]]
-        elsif params.length == 2
+        when 2
           params
         end
 
-      raise 'key' if k.nil?
-      raise 'msg' if msg.nil?
+      raise Errors::MissingKey if k.nil?
 
       _errors[k] ||= []
       _errors[k] << msg
