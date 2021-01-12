@@ -62,7 +62,7 @@ RSpec.describe Aktion::V2::Error do
       include_examples :string_presence_tests
     end
 
-    context 'with no key' do
+    context 'with default key' do
       let(:error) do
         described_class.build do
           message(:name, 'is missing') if params[:name].nil?
@@ -113,5 +113,43 @@ RSpec.describe Aktion::V2::Error do
   end
 
   context 'with multiple keys' do
+    let(:error) do
+      described_class.build do
+        message(:name, 'is missing') if params[:name].nil?
+        message(:age, 'must be greater than 0') if params[:age] <= 0
+      end
+    end
+
+    context 'both are valid' do
+      let(:params) { Hash[name: 'Rickard', age: 30] }
+
+      specify { expect(subject).to eq(false) }
+    end
+
+    context 'both are invalid' do
+      let(:params) { Hash[name: nil, age: 0] }
+
+      specify do
+        expect(subject).to eq(
+          name: ['is missing'],
+          age: ['must be greater than 0']
+        )
+      end
+    end
+
+    context 'only age is valid' do
+      let(:params) { Hash[name: nil, age: 30] }
+
+      specify { expect(subject).to eq(name: ['is missing']) }
+    end
+
+    context 'only name is valid' do
+      let(:params) { Hash[name: 'Rickard', age: 0] }
+
+      specify { expect(subject).to eq(age: ['must be greater than 0']) }
+    end
+  end
+
+  context 'with nested key' do
   end
 end

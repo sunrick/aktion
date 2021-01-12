@@ -22,9 +22,11 @@ module Aktion::V2
         value.send(method) ? { key => [message] } : false
       elsif block
         check = Check.new(self, params, key, value)
-        is_error = check.instance_eval(&block)
-        if is_error
-          check.errors.empty? ? { key => [message] } : check.errors
+        returned_error = check.instance_eval(&block)
+        if check.errors?
+          check.errors
+        elsif returned_error
+          { key => [message] }
         else
           false
         end

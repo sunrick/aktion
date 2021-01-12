@@ -2,7 +2,7 @@ require 'pry'
 
 module Aktion::V2
   class Check
-    attr_accessor :error, :params, :key, :value, :errors
+    attr_accessor :error, :params, :key, :value, :errors, :called
 
     def initialize(error, params, key, value)
       self.error = error
@@ -13,6 +13,8 @@ module Aktion::V2
     end
 
     def message(*params)
+      self.called = true
+
       k, msg =
         if params.length == 1
           [key, params[0]]
@@ -22,6 +24,10 @@ module Aktion::V2
 
       errors[k] ||= []
       errors[k] << msg
+    end
+
+    def errors?
+      called
     end
   end
 end
