@@ -22,4 +22,3 @@ class Errors
     hash
   end
 end
-  

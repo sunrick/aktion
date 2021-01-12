@@ -24,7 +24,7 @@ class Params
     options.each do |key, value|
       param = params[key.to_sym]
       messages = param.errors?(value)
-      errors.add(key.to_sym, messages ) unless messages.empty?
+      errors.add(key.to_sym, messages) unless messages.empty?
     end
     errors
   end

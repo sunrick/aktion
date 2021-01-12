@@ -7,29 +7,18 @@ class Downcase < Aktion
   end
 
   error :name, :blank?
-  
-  error :name, 'is missing', :blank? 
-
+  error :name, 'is missing', :blank?
   error(:name, 'is missing') { v.blank? }
-
-  error do
-    message(:name, 'cannot be rickard') if context[:name] == 'Rickard'
-  end
-
-  error :name { add('cannot be rickard') if value.blank? }
-
+  error { message(:name, 'cannot be rickard') if context[:name] == 'Rickard' }
+  error(:name) { add('cannot be rickard') if value.blank? }
   error :name do
     add('cannot be rickard') if context[:name] == 'Rickard'
   end
-
   error :options do
     add('options.age', 'is missing') if value.dig(:age).nil?
   end
-
   error 'options.age' do
-  
   end
-
   error 'options.age.value' do
   end
 
@@ -46,5 +35,3 @@ action = Downcase.perform(name: 'Rickard')
 
 puts 'success' if action.success?
 puts 'error' if action.errors?
-
-binding.pry

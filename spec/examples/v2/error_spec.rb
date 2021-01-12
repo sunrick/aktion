@@ -1,18 +1,17 @@
 require 'spec_helper'
 
 RSpec.describe Aktion::V2::Error do
+  # error = Error.build(:name, 'is missing', :nil?)
+  # errors = error.call({ name: 'Rickard' })
 
-# error = Error.build(:name, 'is missing', :nil?)
-# errors = error.call({ name: 'Rickard' })
+  # error2 = Error.build(:name, 'is missing') { value.nil? }
+  # errors2 = error2.call({ name: 'Rickard' })
+  # errors2_1 = error2.call({ name: nil })
 
-# error2 = Error.build(:name, 'is missing') { value.nil? }
-# errors2 = error2.call({ name: 'Rickard' })
-# errors2_1 = error2.call({ name: nil })
+  # error3 = Error.build(:name) { add('is missing') if value.nil? }
+  # errors3 = error3.call({ name: nil })
 
-# error3 = Error.build(:name) { add('is missing') if value.nil? }
-# errors3 = error3.call({ name: nil })
-
-# binding.pry
+  # binding.pry
 
   shared_examples 'name tests' do
     let(:subject) { error.call(params) }
@@ -20,17 +19,13 @@ RSpec.describe Aktion::V2::Error do
     context 'name is present' do
       let(:params) { Hash[name: 'Rickard'] }
 
-      specify do
-        expect(subject).to eq(false)
-      end
+      specify { expect(subject).to eq(false) }
     end
 
     context 'name is missing' do
       let(:params) { Hash[name: nil] }
-      
-      specify do
-        expect(subject).to eq(name: 'is missing')
-      end
+
+      specify { expect(subject).to eq(name: 'is missing') }
     end
   end
 
@@ -41,15 +36,13 @@ RSpec.describe Aktion::V2::Error do
   end
 
   context 'key, message, block {}' do
-    let(:error) do 
-      described_class.build(:name, 'is missing') { value.nil? }
-    end
+    let(:error) { described_class.build(:name, 'is missing') { value.nil? } }
 
     include_examples 'name tests'
   end
 
   context 'key, message, block do+end' do
-    let(:error) do 
+    let(:error) do
       described_class.build :name, 'is missing' do
         value.nil?
       end
@@ -59,7 +52,7 @@ RSpec.describe Aktion::V2::Error do
   end
 
   context 'key, block' do
-    let(:error) do 
+    let(:error) do
       described_class.build :name do
         add('is missing') if value.nil?
       end
@@ -69,7 +62,7 @@ RSpec.describe Aktion::V2::Error do
   end
 
   context 'key, block, value' do
-    let(:error) do 
+    let(:error) do
       described_class.build :name do
         add('is missing') if value.nil?
       end
@@ -79,7 +72,7 @@ RSpec.describe Aktion::V2::Error do
   end
 
   context 'key, block, context' do
-    let(:error) do 
+    let(:error) do
       described_class.build :name do
         add('is missing') if context[:name].nil?
       end
@@ -89,10 +82,8 @@ RSpec.describe Aktion::V2::Error do
   end
 
   context 'block' do
-    let(:error) do 
-      described_class.build do
-        add(:name, 'is missing') if context[:name].nil?
-      end
+    let(:error) do
+      described_class.build { add(:name, 'is missing') if context[:name].nil? }
     end
 
     include_examples 'name tests'

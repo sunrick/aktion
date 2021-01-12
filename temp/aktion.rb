@@ -32,7 +32,7 @@ class Aktion
 
   def self.perform(options = {})
     instance = new(options)
-    
+
     instance.validate
 
     if instance.errors?
@@ -86,10 +86,7 @@ class Aktion
   end
 
   def response
-    {
-      status: self.status,
-      json: self.json
-    }
+    { status: self.status, json: self.json }
   end
 end
 
@@ -111,7 +108,6 @@ end
 #     name: 'rickard'
 #   )
 # end
-
 
 # example :missing_name do
 #   status :bad_request

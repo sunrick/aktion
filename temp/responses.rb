@@ -1,2 +1,1 @@
-class Responses
-end
+class Responses; end

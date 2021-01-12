@@ -20,7 +20,7 @@ module Aktion::V2
 
     def self.perform(options = {})
       instance = new(options)
-      
+
       instance.validate
 
       if instance.errors?
@@ -74,10 +74,7 @@ module Aktion::V2
     end
 
     def response
-      {
-        status: self.status,
-        json: self.json
-      }
+      { status: self.status, json: self.json }
     end
   end
 end
