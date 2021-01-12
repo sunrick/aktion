@@ -19,12 +19,12 @@ module Aktion::V2
       value = context[key]
 
       if method
-        value.send(method) ? { key => message } : false
+        value.send(method) ? { key => [message] } : false
       elsif block
         check = Check.new(self, context, key, value)
         is_error = check.instance_eval(&block)
-        if is_error || check.message
-          { key || check.key => check.message || message }
+        if is_error
+          check.errors.empty? ? { key => [message] } : check.errors
         else
           false
         end
