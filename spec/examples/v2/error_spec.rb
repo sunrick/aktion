@@ -17,71 +17,79 @@ RSpec.describe Aktion::V2::Error do
     end
   end
 
-  context 'key, message, method' do
+  context 'with method passing' do
     let(:error) { described_class.build(:name, 'is missing', :nil?) }
 
     include_examples :string_presence_tests
   end
 
-  context 'key, message, block {}' do
-    let(:error) { described_class.build(:name, 'is missing') { value.nil? } }
+  context 'with simple blocks' do
+    context '{}' do
+      let(:error) { described_class.build(:name, 'is missing') { value.nil? } }
 
-    include_examples :string_presence_tests
+      include_examples :string_presence_tests
+    end
+
+    context 'do end' do
+      let(:error) do
+        described_class.build :name, 'is missing' do
+          value.nil?
+        end
+      end
+
+      include_examples :string_presence_tests
+    end
   end
 
-  context 'key, message, block do+end' do
-    let(:error) do
-      described_class.build :name, 'is missing' do
-        value.nil?
+  context 'with message method' do
+    context 'with value' do
+      let(:error) do
+        described_class.build :name do
+          message('is missing') if value.nil?
+        end
+      end
+
+      include_examples :string_presence_tests
+    end
+
+    context 'with context' do
+      let(:error) do
+        described_class.build :name do
+          message('is missing') if params[:name].nil?
+        end
+      end
+
+      include_examples :string_presence_tests
+    end
+
+    context 'with no key' do
+      let(:error) do
+        described_class.build do
+          message(:name, 'is missing') if params[:name].nil?
+        end
+      end
+
+      include_examples :string_presence_tests
+    end
+
+    context 'with missing key for message' do
+      let(:error) do
+        described_class.build { message('is missing') if value.nil? }
+      end
+
+      let(:params) { Hash[name: nil] }
+
+      specify do
+        expect { subject }.to raise_error(Aktion::V2::Errors::MissingKey)
       end
     end
-
-    include_examples :string_presence_tests
   end
 
-  context 'key, block' do
+  context 'with multiple messages' do
     let(:error) do
       described_class.build :name do
-        add('is missing') if value.nil?
-      end
-    end
-
-    include_examples :string_presence_tests
-  end
-
-  context 'key, block, value' do
-    let(:error) do
-      described_class.build :name do
-        add('is missing') if value.nil?
-      end
-    end
-
-    include_examples :string_presence_tests
-  end
-
-  context 'key, block, context' do
-    let(:error) do
-      described_class.build :name do
-        add('is missing') if context[:name].nil?
-      end
-    end
-
-    include_examples :string_presence_tests
-  end
-
-  context 'block' do
-    let(:error) do
-      described_class.build { add(:name, 'is missing') if context[:name].nil? }
-    end
-
-    include_examples :string_presence_tests
-  end
-
-  context 'key, multiple messages, block' do
-    let(:error) do
-      described_class.build :name do
-        add('is missing') if value.nil?
-        add('must be Rickard') if value != 'Rickard'
+        message('is missing') if value.nil?
+        message('must be Rickard') if value != 'Rickard'
       end
     end
 
@@ -104,16 +112,6 @@ RSpec.describe Aktion::V2::Error do
     end
   end
 
-  context 'multiple keys, single message, block' do
-  end
-
-  context 'block, missing key for add(message)' do
-    let(:error) { described_class.build { add('is missing') if value.nil? } }
-
-    let(:params) { Hash[name: nil] }
-
-    specify do
-      expect { subject }.to raise_error(Aktion::V2::Errors::MissingKey)
-    end
+  context 'with multiple keys' do
   end
 end

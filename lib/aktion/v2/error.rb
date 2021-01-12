@@ -15,13 +15,13 @@ module Aktion::V2
       self.block = block
     end
 
-    def call(context)
-      value = context[key]
+    def call(params)
+      value = params[key]
 
       if method
         value.send(method) ? { key => [message] } : false
       elsif block
-        check = Check.new(self, context, key, value)
+        check = Check.new(self, params, key, value)
         is_error = check.instance_eval(&block)
         if is_error
           check.errors.empty? ? { key => [message] } : check.errors
