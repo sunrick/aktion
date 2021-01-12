@@ -1,4 +1,5 @@
 require 'aktion/v2/error'
+require 'aktion/v2/param'
 
 module Aktion::V2
   class Base
