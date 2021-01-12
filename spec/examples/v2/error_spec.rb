@@ -150,6 +150,85 @@ RSpec.describe Aktion::V2::Error do
     end
   end
 
-  context 'with nested key' do
+  context 'with nested keys' do
+    context 'same key multiple messages' do
+      let(:error) do
+        described_class.build do
+          if params.dig(:options, :name).nil?
+            message('options.name', 'is missing')
+          end
+          if params.dig(:options, :name) != 'Rickard'
+            message('options.name', 'must be Rickard')
+          end
+        end
+      end
+
+      context 'name is valid' do
+        let(:params) { Hash[options: { name: 'Rickard' }] }
+
+        specify { expect(subject).to eq(false) }
+      end
+
+      context 'name is invalid' do
+        let(:params) { Hash[options: { name: 'John' }] }
+
+        specify do
+          expect(subject).to eq(options: { name: ['must be Rickard'] })
+        end
+      end
+
+      context 'name is missing' do
+        let(:params) { Hash[options: { name: nil }] }
+
+        specify do
+          expect(subject).to eq(
+            options: { name: ['is missing', 'must be Rickard'] }
+          )
+        end
+      end
+    end
+
+    context 'different keys' do
+      let(:error) do
+        described_class.build do
+          if params.dig(:options, :name).nil?
+            message('options.name', 'is missing')
+          end
+          if params.dig(:options, :age) <= 0
+            message('options.age', 'must be greater than 0')
+          end
+        end
+      end
+
+      context 'both are valid' do
+        let(:params) { Hash[options: { name: 'Rickard', age: 30 }] }
+
+        specify { expect(subject).to eq(false) }
+      end
+
+      context 'both are invalid' do
+        let(:params) { Hash[options: { name: nil, age: 0 }] }
+
+        specify do
+          expect(subject).to eq(
+            options: { name: ['is missing'], age: ['must be greater than 0'] }
+          )
+        end
+      end
+
+      context 'only age is valid' do
+        let(:params) { Hash[options: { name: nil, age: 30 }] }
+
+        specify { expect(subject).to eq(options: { name: ['is missing'] }) }
+      end
+
+      context 'only name is valid' do
+        let(:params) { Hash[options: { name: 'Rickard', age: 0 }] }
+
+        specify do
+          expect(subject).to eq(options: { age: ['must be greater than 0'] })
+        end
+      end
+    end
   end
 end
