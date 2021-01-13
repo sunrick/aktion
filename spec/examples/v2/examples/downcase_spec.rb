@@ -1,15 +1,30 @@
 require 'spec_helper'
 
 class Downcase < Aktion::V2::Base
-  param :name, :string, required: true
+  contract MyContract
 
-  error(:name) do
+  param :name, :string
+
+  # transform :name, :to_s
+
+  error :name do
     if value.nil?
       message 'is missing'
     elsif value.match(/\d/)
       message 'cannot have numbers'
     end
   end
+
+  # response :ok do
+  #   field :name
+  # end
+
+  # example :base do
+  #   params name: 'Rickard'
+  #   response :ok do
+  #     { name: 'rickard' }
+  #   end
+  # end
 
   def perform
     success :ok, name: params[:name].downcase
