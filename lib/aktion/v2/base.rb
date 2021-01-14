@@ -5,11 +5,11 @@ require 'aktion/v2/param'
 module Aktion::V2
   class Base
     def self.params
-      @@params ||= []
+      @params ||= []
     end
 
     def self.errors
-      @@errors ||= []
+      @errors ||= []
     end
 
     def self.param(*args, &block)
@@ -44,14 +44,14 @@ module Aktion::V2
     end
 
     def transform
-      params.each do |key, original_value|
-        status, value = find_param(key)&.call(original_value)
-        if status == :ok
-          params[key] = value
-        elsif !status.nil?
-          raise 'implement me'
-        end
-      end
+      # params.each do |key, original_value|
+      #   status, value = find_param(key)&.call(original_value)
+      #   if status == :ok
+      #     params[key] = value
+      #   elsif !status.nil?
+      #     raise 'implement me'
+      #   end
+      # end
     end
 
     def find_param(key)
@@ -61,6 +61,7 @@ module Aktion::V2
     def validate
       results =
         self.class.errors.map { |error| error.call(params) }.select { |e| e }
+
       results.each { |r| Utils.deep_merge(errors, r) }
     end
 

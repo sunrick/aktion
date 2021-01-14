@@ -16,7 +16,8 @@ module Aktion::V2
     end
 
     def call(params)
-      value = params[key]
+      keys = key.to_s.split('.').map(&:to_sym)
+      value = keys.length > 1 ? params.dig(*keys) : params[key]
 
       if method
         value.send(method) ? { key => [message] } : false
@@ -24,15 +25,40 @@ module Aktion::V2
         check = Check.new(self, params, key, value)
         returned_error = check.instance_eval(&block)
         if check.errors?
-          check.errors
+          process_errors(check.errors)
         elsif returned_error
-          { key => [message] }
+          process_errors({ key => [message] })
         else
           false
         end
       else
         false
       end
+    end
+
+    private
+
+    # This code is gross.
+    def process_errors(errors)
+      build_errors = {}
+
+      errors.each do |key, messages|
+        keys = key.to_s.split('.')
+        length = keys.length
+
+        if length > 1
+          last_key = keys.pop.to_sym
+
+          hash = { last_key => messages }
+          keys.each { |k| hash = { k.to_sym => hash } }
+
+          Utils.deep_merge(build_errors, hash)
+        else
+          build_errors[key] = messages
+        end
+      end
+
+      build_errors
     end
   end
 end

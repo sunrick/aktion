@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 class Downcase < Aktion::V2::Base
-  contract MyContract
+  # contract MyContract
 
   param :name, :string
 

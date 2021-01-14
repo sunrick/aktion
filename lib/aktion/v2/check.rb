@@ -2,14 +2,14 @@ require 'pry'
 
 module Aktion::V2
   class Check
-    attr_accessor :error, :params, :key, :value, :_errors, :called
+    attr_accessor :error, :params, :key, :value, :errors, :called
 
     def initialize(error, params, key, value)
       self.error = error
       self.params = params
       self.key = key
       self.value = value
-      self._errors = {}
+      self.errors = {}
     end
 
     def message(*params)
@@ -27,35 +27,8 @@ module Aktion::V2
 
       raise Errors::MissingKey if k.nil?
 
-      _errors[k] ||= []
-      _errors[k] << msg
-    end
-
-    def errors
-      @errors ||= process_errors
-    end
-
-    # This code is gross.
-    def process_errors
-      build_errors = {}
-
-      _errors.each do |key, messages|
-        keys = key.to_s.split('.')
-        length = keys.length
-
-        if length > 1
-          last_key = keys.pop.to_sym
-
-          hash = { last_key => messages }
-          keys.each { |k| hash = { k.to_sym => hash } }
-
-          Utils.deep_merge(build_errors, hash)
-        else
-          build_errors[key] = messages
-        end
-      end
-
-      build_errors
+      errors[k] ||= []
+      errors[k] << msg
     end
 
     def errors?
