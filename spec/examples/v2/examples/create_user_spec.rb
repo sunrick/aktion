@@ -39,3 +39,59 @@ RSpec.describe CreateUser do
     end
   end
 end
+
+class Downcase
+  param :name
+
+  def transform
+    map :name, :to_s
+  end
+
+  def validate
+    error :name, 'is missing', :blank?
+  end
+
+  def perform
+    success :ok, name: params[:name]
+  end
+end
+
+class Users::Update < Aktion::Base
+  params :strict do
+    required(:id, :integer)
+    required(:name, :string)
+    required(:profile, :hash) do
+      required(:age, :integer)
+      required(:dogs, :array) do
+        # ???
+      end
+    end
+  end
+
+  def authenticate; end
+
+  def transform
+    params[:name] = params[:name].upcase
+
+    set(:name) { value.upcase }
+    set(:profile, :age) { value * 10 }
+    set(:profile, :dogs) { value.map(&:upcase) }
+  end
+
+  def validate
+    error(:name, 'is missing') if get(:name).blank?
+    error(:name, 'is missing') { value.nil? }
+  end
+
+  def load
+    self.user = User.find(id: params)
+  end
+
+  def authorize
+    failure(:unauthorized, 'sorry you cannot do that')
+  end
+
+  def perform
+    user.update(name: params[:name])
+  end
+end
