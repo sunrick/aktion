@@ -92,6 +92,10 @@ class Users::Update < Aktion::Base
   end
 
   def perform
-    user.update(name: params[:name])
+    if user.update(name: params[:name])
+      success(:ok, user)
+    else
+      failure(:unprocessable_entity, user.errors.messages)
+    end
   end
 end
