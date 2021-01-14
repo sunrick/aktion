@@ -35,7 +35,7 @@ module Aktion::V2
       instance
     end
 
-    attr_accessor :options, :params, :status, :json, :errors
+    attr_accessor :options, :params, :status, :body, :errors
 
     def initialize(options = {})
       self.options = options
@@ -72,7 +72,7 @@ module Aktion::V2
     def success(status, object)
       @success = true
       self.status = status
-      self.json = object
+      self.body = object
     end
 
     def success?
@@ -81,7 +81,7 @@ module Aktion::V2
 
     def failure(status, object)
       self.status = status
-      self.json = object
+      self.body = object
     end
 
     def failure?
@@ -89,7 +89,7 @@ module Aktion::V2
     end
 
     def response
-      [self.status, self.json]
+      [self.status, self.body]
     end
   end
 end
