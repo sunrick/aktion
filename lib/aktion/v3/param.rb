@@ -1,19 +1,7 @@
 module Aktion::V3
   class Param
-    def self.build(*args, &block)
-      opts =
-        case args.length
-        when 1
-          args.is_a?(Hash) ? args : { key: args.first }
-        when 2
-          key, opts = args
-          opts.is_a?(Hash) ? { key: key }.merge(opts) : { key: key, type: opts }
-        when 3
-          key, type, opts = args
-          { key: key, type: type }.merge(opts)
-        end
-
-      opts = options(opts)
+    def self.build(key, type, opts = {}, &block)
+      opts = options(key, name, opts)
 
       instance = new(opts)
 
@@ -22,10 +10,10 @@ module Aktion::V3
       instance
     end
 
-    def self.options(opts)
+    def self.options(key, name, opts)
       {
-        key: nil,
-        type: :any,
+        key: key,
+        type: name || :any,
         default: nil,
         required: false,
         description: nil,
@@ -53,7 +41,7 @@ module Aktion::V3
     end
 
     def call(params, errors)
-      errors.add(key, 'is missing') if true && params[key].nil?
+      errors.add(key, 'is missing') if required && params[key].nil?
       children.each { |child| child.call(params, errors) }
       self
     end

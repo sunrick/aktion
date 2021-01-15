@@ -14,16 +14,16 @@ module Aktion::V3
       self.nodes = []
     end
 
-    def add(*args, &block)
-      nodes << Param.build(*args, &block)
+    def add(key, type, opts = {}, &block)
+      nodes << Param.build(key, type, opts, &block)
     end
 
-    def required(*args, &block)
-      add(*args, &block)
+    def required(key, type, opts = {}, &block)
+      add(key, type, opts.merge(required: true), &block)
     end
 
-    def optional(*args, &block)
-      add(*args, &block)
+    def optional(key, type, opts = {}, &block)
+      add(key, type, opts, &block)
     end
 
     def call(params, errors)
