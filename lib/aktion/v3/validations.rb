@@ -1,7 +1,11 @@
+require 'aktion/v3/error'
+
 module Aktion::V3
   class Validations
     def self.build(&block)
-      new.instance_eval(&block)
+      instance = new
+      instance.instance_eval(&block)
+      instance
     end
 
     attr_accessor :children
@@ -9,10 +13,12 @@ module Aktion::V3
       self.children = []
     end
 
-    def error(key, message, &block); end
+    def error(key = nil, message = nil, method = nil, &block)
+      children << Error.build(key, message, method, &block)
+    end
 
     def call(params, errors)
-      children.each { |child| child.call(params) }
+      children.each { |child| child.call(params, errors) }
     end
   end
 end

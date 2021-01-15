@@ -56,12 +56,9 @@ module Aktion::V3
       errors.present?
     end
 
-    def error(key, message, &block)
-      if block_given?
-        # errors.build(key, message).instance_eval(&block)
-      else
-        errors.add(key, message)
-      end
+    def error(key, message)
+      @failure = true
+      errors.add(key, message)
     end
 
     def success(status, object)

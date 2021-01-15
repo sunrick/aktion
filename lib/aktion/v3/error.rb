@@ -1,4 +1,4 @@
-require 'aktion/v2/check'
+require 'aktion/v3/check'
 
 module Aktion::V3
   class Error
@@ -15,24 +15,24 @@ module Aktion::V3
       self.block = block
     end
 
-    def call(params, errors)
+    def value
+      get(key, params)
+    end
+
+    def get(key, params)
       keys = key.to_s.split('.').map(&:to_sym)
-      value = params.dig(*keys)
+      params.dig(*keys)
+    end
+
+    def call(params, errors)
+      value = get(key, params)
 
       if method
-        value.send(method) ? { key => [message] } : false
+        errors.add(key, message) if value.send(method)
       elsif block
-        check = Check.new(self, params, key, value)
+        check = Check.new(self, params, errors)
         returned_error = check.instance_eval(&block)
-        if check.errors?
-          check.errors
-        elsif returned_error
-          { key => [message] }
-        else
-          false
-        end
-      else
-        false
+        errors.add(key, message) if !check.message_called? && returned_error
       end
     end
   end

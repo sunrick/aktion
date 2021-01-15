@@ -23,7 +23,10 @@ class CreateUser < Aktion::V3::Base
     end
   end
 
-  validations { error(:name, 'only digits allowed') { value.nil? } }
+  validations do
+    # error(:name, 'only non-digits allowed') { value.match(/\d/) }
+    error(:name) { message 'only non-digits allowed' if value.match(/\d/) }
+  end
 
   def perform
     user = User.new(params)
@@ -54,7 +57,7 @@ RSpec.describe CreateUser do
       let(:params) { Hash[name: 'Rickard13', profile: { age: 30 }] }
       specify do
         expect(subject.response).to eq(
-          [:ok, { name: 'Rickard', profile: { age: 30 } }]
+          [:unprocessable_entity, { name: 'only non-digits allowed' }]
         )
       end
     end
