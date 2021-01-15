@@ -44,14 +44,14 @@ module Aktion::V2
     end
 
     def transform
-      # params.each do |key, original_value|
-      #   status, value = find_param(key)&.call(original_value)
-      #   if status == :ok
-      #     params[key] = value
-      #   elsif !status.nil?
-      #     raise 'implement me'
-      #   end
-      # end
+      params.each do |key, original_value|
+        status, value = find_param(key)&.call(original_value)
+        if status == :ok
+          params[key] = value
+        elsif !status.nil?
+          raise 'implement me'
+        end
+      end
     end
 
     def find_param(key)

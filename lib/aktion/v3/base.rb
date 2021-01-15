@@ -1,8 +1,11 @@
 require 'aktion/v3/errors'
+require 'aktion/v3/params'
 
 module Aktion::V3
   class Base
-    def self.params; end
+    def self.params(mode = nil, &block)
+      @params ||= Params.build(mode, &block)
+    end
 
     def self.perform(params = {}, options = {})
       instance = new(params, options)
@@ -72,16 +75,17 @@ module Aktion::V3
     end
 
     def success?
-      @success || false
+      @success
     end
 
     def failure(status, object)
+      @failure == true
       self.status = status
       self.body = object
     end
 
     def failure?
-      !success?
+      @failure
     end
 
     def response

@@ -1,4 +1,4 @@
-module Aktion::V2
+module Aktion::V3
   class Param
     def self.build(*args, &block)
       opts =
@@ -27,7 +27,6 @@ module Aktion::V2
         key: nil,
         type: :any,
         default: nil,
-        fill: false,
         required: false,
         description: nil,
         example: nil,
@@ -39,6 +38,7 @@ module Aktion::V2
     attr_accessor :key,
                   :type,
                   :required,
+                  :default,
                   :description,
                   :example,
                   :notes,
@@ -52,6 +52,6 @@ module Aktion::V2
       children << self.class.build(*args, &block)
     end
 
-    def call(value); end
+    def call(value, errors); end
   end
 end
