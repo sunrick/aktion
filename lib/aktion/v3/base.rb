@@ -4,9 +4,9 @@ require 'aktion/v3/validations'
 
 module Aktion::V3
   class Base
-    def self.params(mode = nil, &block)
+    def self.params(&block)
       if block_given?
-        @params = Params.build(mode, &block)
+        @params = Params.build(&block)
       else
         @params
       end
@@ -27,19 +27,12 @@ module Aktion::V3
       self.validations&.call(instance.params, instance.errors)
 
       if instance.errors?
-        instance.failure(
-          :unprocessable_entity,
-          instance.process_errors(instance.errors.to_h)
-        )
+        instance.failure(:unprocessable_entity, instance.errors.to_h)
       else
         instance.perform
       end
 
       instance
-    end
-
-    def process_errors(errors)
-      errors
     end
 
     def dependencies

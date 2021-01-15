@@ -4,13 +4,15 @@ module Aktion::V3
       new.instance_eval(&block)
     end
 
-    attr_accessor :nodes
+    attr_accessor :children
     def initialize
-      self.nodes = []
+      self.children = []
     end
 
+    def error(key, message, &block); end
+
     def call(params, errors)
-      errors.each { |e| e.call(params) }
+      children.each { |child| child.call(params) }
     end
   end
 end
