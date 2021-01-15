@@ -52,6 +52,10 @@ module Aktion::V3
       children << self.class.build(*args, &block)
     end
 
-    def call(value, errors); end
+    def call(params, errors)
+      errors.add(key, 'is missing') if true && params[key].nil?
+      children.each { |child| child.call(params, errors) }
+      self
+    end
   end
 end
