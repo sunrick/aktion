@@ -51,6 +51,37 @@ module Aktion::V3
       def call(params, errors); end
     end
 
+    class Array < Base
+      def required(*args, &block)
+        case args.length
+        when 1
+          self.children =
+            Param::ArrayChild.build(key, args[0], args[1] || {}, &block)
+        else
+          self.children =
+            Param::Required.build("#{key}.#{k}", args[1], args[2] || {}, &block)
+        end
+      end
+
+      def call(params, errors)
+        array = get(key, params)
+        array.each_with_index do |item, index|
+          children.call(params, index, item, errors)
+        end
+        self
+      end
+
+      # def optional(*args, &block)
+      #   children << Param::Optional.build("#{key}.#{k}", type, opts, &block)
+      # end
+    end
+
+    class ArrayChild < Base
+      def call(params, index, item, errors)
+        errors.add(key, { index => 'is not valid' })
+      end
+    end
+
     class Optional < Base
       def call(params, errors)
         children.each { |child| child.call(params, errors) }
@@ -65,5 +96,19 @@ module Aktion::V3
         self
       end
     end
+
+    # class Base
+    # end
+
+    # module Array
+    #   class Parent
+    #   end
+
+    #   class Child
+    #   end
+    # end
+
+    # class Hash
+    # end
   end
 end

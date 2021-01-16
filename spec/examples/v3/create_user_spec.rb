@@ -21,6 +21,15 @@ class CreateUser < Aktion::V3::Base
       required :age, :integer
       optional :weight, :integer
     end
+
+    required :dogs, :array do
+      required :string
+    end
+
+    required :dogs, :array do
+      required :name, :string
+      required :age, :integer
+    end
   end
 
   validations do

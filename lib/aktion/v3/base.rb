@@ -39,10 +39,6 @@ module Aktion::V3
       { errors: Errors }
     end
 
-    def pipeline
-      %i[transform validate perform]
-    end
-
     attr_accessor :params, :options, :status, :body, :errors
     def initialize(params, options)
       self.params = params
