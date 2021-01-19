@@ -1,5 +1,5 @@
 class Downcase < Aktion::V3::Base
-  params { required :name, :string }
+  params { add :name, :string }
 
   # validations { error(:name, 'is missing') { value.nil? } }
 

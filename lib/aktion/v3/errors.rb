@@ -25,7 +25,7 @@ module Aktion::V3
           last_key = keys.pop.to_sym
 
           hash = { last_key => messages }
-          keys.each { |k| hash = { k.to_sym => hash } }
+          keys.reverse.each { |k| hash = { k.to_sym => hash } }
 
           deep_merge(build_errors, hash)
         else

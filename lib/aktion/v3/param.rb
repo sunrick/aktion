@@ -19,7 +19,8 @@ module Aktion::V3
           description: nil,
           example: nil,
           notes: nil,
-          children: []
+          children: [],
+          required: false
         }.merge(opts)
       end
 
@@ -29,7 +30,8 @@ module Aktion::V3
                     :description,
                     :example,
                     :notes,
-                    :children
+                    :children,
+                    :required
 
       def initialize(opts = {})
         opts.each { |key, value| self.send("#{key}=", value) }
@@ -40,75 +42,110 @@ module Aktion::V3
         params.dig(*keys)
       end
 
-      def required(k, type, opts = {}, &block)
-        children << Param::Required.build("#{key}.#{k}", type, opts, &block)
+      def last(key)
+        key.to_s.split('.').map(&:to_sym).last
       end
 
-      def optional(k, type, opts = {}, &block)
-        children << Param::Optional.build("#{key}.#{k}", type, opts, &block)
+      def required?
+        @required
       end
 
-      def call(params, errors); end
+      def add(k, type, opts = {}, &block)
+        opts.merge!(required: true)
+        raise 'cannot do that'
+      end
+
+      def call(params:, errors:, item: nil, index: nil)
+        if index
+          k = key.gsub('%I%', index.to_s)
+          errors.add(k, 'is missing') if required? && item.nil?
+        else
+          value = get(key, params)
+          errors.add(key, 'is missing') if required? && value.nil?
+        end
+        self
+      end
+    end
+
+    class Hash < Base
+      def add(k, type, opts = {}, &block)
+        opts.merge!(required: true)
+        k = "#{key}.#{k}"
+        children <<
+          case type
+          when :hash
+            Param::Hash.build(k, type, opts, &block)
+          when :array
+            Param::Array.build(k, type, opts, &block)
+          else
+            Param::Base.build(k, type, opts, &block)
+          end
+      end
+
+      def call(params:, errors:, item: nil, index: nil)
+        if index
+          k = last(key)
+          value = item && item[k]
+          k = key.gsub('%I%', index.to_s)
+        else
+          value = get(key, params)
+        end
+
+        if required? && value.nil? || value.empty?
+          errors.add(k, 'is missing')
+        else
+          children.each do |child|
+            child.call(params: params, errors: errors, item: item, index: index)
+          end
+        end
+        self
+      end
     end
 
     class Array < Base
-      def required(*args, &block)
-        case args.length
-        when 1
-          self.children =
-            Param::ArrayChild.build(key, args[0], args[1] || {}, &block)
+      def add(*args, &block)
+        k, type, opts =
+          case args.length
+          when 1
+            ["#{key}.%I%", args[0], {}]
+          when 2
+            ["#{key}.%I%.#{args[0]}", args[1], {}]
+          else
+            args
+          end
+
+        opts.merge!(required: true)
+
+        children <<
+          case type
+          when :hash
+            Param::Hash.build(k, type, opts, &block)
+          when :array
+            Param::Array.build(k, type, opts, &block)
+          else
+            Param::Base.build(k, type, opts, &block)
+          end
+      end
+
+      def call(params:, errors:, item: nil, index: nil)
+        items = get(key, params)
+
+        if required? && items.nil? || items.empty?
+          errors.add(key, 'is missing')
         else
-          self.children =
-            Param::Required.build("#{key}.#{k}", args[1], args[2] || {}, &block)
+          items.each.with_index do |item, index|
+            children.each do |child|
+              child.call(
+                params: params,
+                errors: errors,
+                item: item,
+                index: index
+              )
+            end
+          end
         end
-      end
-
-      def call(params, errors)
-        array = get(key, params)
-        array.each_with_index do |item, index|
-          children.call(params, index, item, errors)
-        end
-        self
-      end
-
-      # def optional(*args, &block)
-      #   children << Param::Optional.build("#{key}.#{k}", type, opts, &block)
-      # end
-    end
-
-    class ArrayChild < Base
-      def call(params, index, item, errors)
-        errors.add(key, { index => 'is not valid' })
-      end
-    end
-
-    class Optional < Base
-      def call(params, errors)
-        children.each { |child| child.call(params, errors) }
         self
       end
     end
-
-    class Required < Base
-      def call(params, errors)
-        errors.add(key, 'is missing') if get(key, params).nil?
-        children.each { |child| child.call(params, errors) }
-        self
-      end
-    end
-
-    # class Base
-    # end
-
-    # module Array
-    #   class Parent
-    #   end
-
-    #   class Child
-    #   end
-    # end
-
-    # class Hash
-    # end
   end
 end

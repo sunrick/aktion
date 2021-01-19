@@ -13,16 +13,22 @@ module Aktion::V3
       self.children = []
     end
 
-    def required(key, type, opts = {}, &block)
-      children << Param::Required.build(key, type, opts, &block)
-    end
+    def add(key, type, opts = {}, &block)
+      opts.merge!(required: true)
 
-    def optional(key, type, opts = {}, &block)
-      children << Param::Optional.build(key, type, opts, &block)
+      children <<
+        case type
+        when :hash
+          Param::Hash.build(key, type, opts, &block)
+        when :array
+          Param::Array.build(key, type, opts, &block)
+        else
+          Param::Base.build(key, type, opts, &block)
+        end
     end
 
     def call(params, errors)
-      children.each { |node| node.call(params, errors) }
+      children.each { |child| child.call(params: params, errors: errors) }
       self
     end
   end
