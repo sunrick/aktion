@@ -87,7 +87,7 @@ RSpec.describe Aktion::V3::Params do
   let(:errors) { Aktion::V3::Errors.new }
   before { builder.call(params, errors) }
 
-  xcontext 'something' do
+  context 'something' do
     let(:builder) do
       described_class.build do
         required :dogs, :array do

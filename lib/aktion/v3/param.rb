@@ -40,17 +40,29 @@ module Aktion::V3
       @required
     end
 
-    def required(k, type, opts = {}, &block)
-      opts.merge!(required: true)
-      add(k, type, opts, &block)
-    end
-
-    def optional(k, type, opts = {}, &block)
-      add(k, type, opts, &block)
-    end
-
-    def add(k, type, opts = {}, &block)
+    def required(*args, &block)
+      k, type, opts = parse(args)
+      opts = opts.merge(required: true)
       children << self.class.build(k, type, opts, &block)
+    end
+
+    def optional(*args, &block)
+      k, type, opts = parse(args)
+      children << self.class.build(k, type, opts, &block)
+    end
+
+    def parse(args)
+      case args.length
+      when 1
+        raise 'invalid' unless type == :array
+        [nil, args[0], {}]
+      when 2
+        [args[0], args[1], {}]
+      when 3
+        args
+      else
+        raise 'invalid'
+      end
     end
 
     def call(k:, value:, errors:)
