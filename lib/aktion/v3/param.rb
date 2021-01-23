@@ -66,10 +66,12 @@ module Aktion::V3
     end
 
     def call(k:, value:, errors:)
-      message = Types.invalid?(type, value)
-      if message
-        errors.add(k, message)
-        return
+      if required?
+        message = Types.invalid?(type, value)
+        if message
+          errors.add(k, message)
+          return
+        end
       end
 
       children.each do |child|
@@ -82,8 +84,9 @@ module Aktion::V3
           value.each.with_index do |child_value, index|
             child_key = "#{k}.#{index}"
 
-            if required? && (child_value.nil? || child_value.empty?)
-              errors.add(child_key, 'is missing')
+            if required?
+              message = Types.invalid?(child.type, child_value)
+              errors.add(child_key, message) if message
             elsif !(child_value.nil? || child_value.empty?)
               child_value = child_value[child.key] if child.key
               child_key = "#{child_key}.#{child.key}" if child.key

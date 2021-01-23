@@ -5,7 +5,7 @@ RSpec.describe Aktion::V3::Params do
 
   EMPTY = 'is missing'
   MISSING = 'is missing'
-  INVALID_TYPE = 'is invalid type'
+  INVALID_TYPE = 'invalid type'
 
   context 'array' do
     context 'without children' do
