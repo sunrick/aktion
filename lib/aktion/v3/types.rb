@@ -10,6 +10,10 @@ module Types
     }
   end
 
+  def is_missing?(type, value)
+    types[type]&.is_missing?(value)
+  end
+
   def invalid?(type, value)
     value.nil? ? 'is missing' : types[type]&.invalid?(value)
   end
@@ -35,6 +39,10 @@ module Types
   end
 
   class Hash
+    def is_missing?(value)
+      value.respond_to?(:to_hash) && value.empty?
+    end
+
     def self.invalid?(value)
       if value.respond_to?(:to_hash)
         'is missing' if value.empty?
