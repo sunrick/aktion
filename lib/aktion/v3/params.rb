@@ -47,11 +47,12 @@ module Aktion::V3
       raise 'opts must be present' if opts.nil?
     end
 
-    def call(params, errors)
+    def call(params, errors = Aktion::V3::Errors.new)
       children.each do |child|
         child.call(k: child.key, value: params[child.key], errors: errors)
       end
-      self
+
+      { params: params, errors: errors }
     end
   end
 end

@@ -66,22 +66,10 @@ module Aktion::V3
     end
 
     def call(k:, value:, errors:)
-      case type
-      when :hash
-        if value.nil? || value.empty?
-          errors.add(k, 'is missing') if required?
-          return
-        end
-      when :array
-        if value.nil? || value.empty?
-          errors.add(k, 'is missing') if required?
-          return
-        end
-      else
-        if value.nil?
-          errors.add(k, 'is missing') if required?
-          return
-        end
+      message = Types.invalid?(type, value)
+      if message
+        errors.add(k, message)
+        return
       end
 
       children.each do |child|
