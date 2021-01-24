@@ -46,12 +46,10 @@ module Aktion::V3::Param
       message = Types.invalid?(type, value)
       if required? && message
         errors.add(k, message)
-        return
-      elsif message
-        return
+      elsif !message && !children.empty?
+        value = call_children(k: k, value: value, errors: errors)
       end
-
-      call_children(k: k, value: value, errors: errors)
+      value
     end
 
     def call_children(k:, value:, errors:); end
@@ -61,32 +59,37 @@ module Aktion::V3::Param
   class String < Base; end
   class Array < Base
     def call_children(k:, value:, errors:)
-      children.each do |child|
-        if child.key
-          # child is a hash
-          value.each.with_index do |child_value, index|
-            child_key = "#{k}.#{index}"
+      values = []
+      return value if children.empty?
+      children.map do |child|
+        values =
+          if child.key
+            # child is a hash
+            value.map.with_index do |hash, index|
+              child_key = "#{k}.#{index}"
 
-            message = Types.invalid?(:hash, child_value)
-            if required? && message
-              errors.add(child_key, message)
-              next
-            elsif message
-              next
+              message = Types.invalid?(:hash, hash)
+              if required? && message
+                errors.add(child_key, message)
+              elsif !message
+                child_value = hash[child.key]
+                child_key = "#{child_key}.#{child.key}"
+                hash[child.key] =
+                  child.call(k: child_key, value: child_value, errors: errors)
+              end
+
+              hash
             end
-
-            child_value = child_value[child.key]
-            child_key = "#{child_key}.#{child.key}"
-            child.call(k: child_key, value: child_value, errors: errors)
+          else
+            # child is dumb
+            value.map.with_index do |child_value, index|
+              child_key = "#{k}.#{index}"
+              child.call(k: child_key, value: child_value, errors: errors)
+            end
           end
-        else
-          # child is dumb
-          value.each.with_index do |child_value, index|
-            child_key = "#{k}.#{index}"
-            child.call(k: child_key, value: child_value, errors: errors)
-          end
-        end
       end
+
+      values
     end
   end
 
@@ -95,8 +98,10 @@ module Aktion::V3::Param
       children.each do |child|
         child_key = "#{k}.#{child.key}"
         child_value = value[child.key]
-        child.call(k: child_key, value: child_value, errors: errors)
+        value[child.key] =
+          child.call(k: child_key, value: child_value, errors: errors)
       end
+      value
     end
   end
 
