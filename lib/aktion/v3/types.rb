@@ -18,6 +18,20 @@ module Types
     value.nil? ? 'is missing' : types[type]&.invalid?(value)
   end
 
+  def call(type, value)
+    types[type]&.call(value)
+  end
+
+  class Base
+    def self.call(value)
+      if value.nil?
+        [false, 'is missing']
+      else
+
+      end
+    end
+  end
+
   class String
     def self.invalid?(value)
       if value.respond_to?(:to_str)

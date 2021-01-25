@@ -1,10 +1,14 @@
 class Downcase < Aktion::V3::Base
-  params { required :name, :string }
+  params { required(:name, :string) }
 
   def perform
     success :ok, name: params[:name].downcase
   end
 end
+
+expect(Downcase.params.get(:name))
+expect(Downcase.transformations.get(:name).call(value))
+expect(Downcase.validations.get(:name).call(value, params: params, item: item))
 
 require 'spec_helper'
 
