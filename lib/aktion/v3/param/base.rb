@@ -1,5 +1,5 @@
 module Aktion::V3::Param
-  class Base
+  class Any
     attr_accessor :key,
                   :type,
                   :default,
@@ -55,9 +55,8 @@ module Aktion::V3::Param
     def call_children(k:, value:, errors:); end
   end
 
-  class Any < Base; end
-  class String < Base; end
-  class Array < Base
+  class String < Any; end
+  class Array < Any
     def call_children(k:, value:, errors:)
       values = []
       return value if children.empty?
@@ -93,11 +92,12 @@ module Aktion::V3::Param
     end
   end
 
-  class Hash < Base
+  class Hash < Any
     def call_children(k:, value:, errors:)
       children.each do |child|
         child_key = "#{k}.#{child.key}"
         child_value = value[child.key]
+
         value[child.key] =
           child.call(k: child_key, value: child_value, errors: errors)
       end
@@ -105,5 +105,5 @@ module Aktion::V3::Param
     end
   end
 
-  class Integer < Base; end
+  class Integer < Any; end
 end

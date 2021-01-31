@@ -6,9 +6,9 @@ class Downcase < Aktion::V3::Base
   end
 end
 
-expect(Downcase.params.get(:name))
-expect(Downcase.transformations.get(:name).call(value))
-expect(Downcase.validations.get(:name).call(value, params: params, item: item))
+# expect(Downcase.params.get(:name))
+# expect(Downcase.transformations.get(:name).call(value))
+# expect(Downcase.validations.get(:name).call(value, params: params, item: item))
 
 require 'spec_helper'
 
