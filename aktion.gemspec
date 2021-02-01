@@ -31,8 +31,6 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = %w[lib]
 
-  spec.add_runtime_dependency 'dry-schema'
-  spec.add_runtime_dependency 'dry-cli'
   spec.add_runtime_dependency 'paint'
   spec.add_runtime_dependency 'whirly'
 
@@ -43,5 +41,4 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rails'
   spec.add_development_dependency 'sqlite3'
   spec.add_development_dependency 'rspec-rails'
-  spec.add_development_dependency 'prettier'
 end
