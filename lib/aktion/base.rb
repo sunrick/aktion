@@ -78,7 +78,7 @@ module Aktion
     end
 
     def response
-      [self.status, self.body]
+      [status, body]
     end
   end
 end
