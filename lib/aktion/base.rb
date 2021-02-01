@@ -1,8 +1,8 @@
-require 'aktion/v3/errors'
-require 'aktion/v3/params'
-require 'aktion/v3/validations'
+require 'aktion/errors'
+require 'aktion/params'
+require 'aktion/validations'
 
-module Aktion::V3
+module Aktion
   class Base
     def self.params(&block)
       if block_given?

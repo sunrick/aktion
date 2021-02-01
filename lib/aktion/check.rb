@@ -1,4 +1,4 @@
-module Aktion::V3
+module Aktion
   class Check
     attr_accessor :parent, :params, :key, :value, :errors
 

@@ -1,6 +1,6 @@
-require 'aktion/v3/check'
+require 'aktion/check'
 
-module Aktion::V3
+module Aktion
   class Error
     attr_accessor :key, :message, :method, :block
 

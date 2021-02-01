@@ -1,6 +1,6 @@
-require 'aktion/v3/error'
+require 'aktion/error'
 
-module Aktion::V3
+module Aktion
   class Validations
     def self.build(&block)
       instance = new

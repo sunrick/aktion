@@ -1,7 +1,8 @@
 require 'aktion/version'
+require 'aktion/types'
+require 'aktion/base'
 require 'aktion/rails'
 require 'aktion/controller'
-require 'aktion/v3'
 
 module Aktion
   class Error < StandardError; end

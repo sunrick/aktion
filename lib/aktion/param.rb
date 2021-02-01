@@ -1,6 +1,6 @@
-require 'aktion/v3/param/base'
+require 'aktion/param/base'
 
-module Aktion::V3
+module Aktion
   module Param
     TYPES = {
       any: Param::Any,

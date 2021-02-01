@@ -1,6 +1,6 @@
-require 'aktion/v3/param'
+require 'aktion/param'
 
-module Aktion::V3
+module Aktion
   class Params
     def self.build(&block)
       instance = new

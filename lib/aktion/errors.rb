@@ -1,4 +1,4 @@
-module Aktion::V3
+module Aktion
   class Errors
     attr_accessor :errors
 

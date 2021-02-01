@@ -1,4 +1,4 @@
-module Aktion::V3::Param
+module Aktion::Param
   class Any
     attr_accessor :key,
                   :type,
