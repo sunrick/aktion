@@ -1,6 +1,5 @@
 require 'aktion/version'
-require 'aktion/core'
-require 'aktion/base'
+require 'aktion/rails'
 require 'aktion/controller'
 require 'aktion/v3'
 

@@ -9,7 +9,7 @@ module Aktion
     end
 
     def after(klass)
-      @after_actiosn << klass
+      @after_actions << klass
     end
 
     def after_actions

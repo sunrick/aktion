@@ -46,7 +46,9 @@ module Aktion::V3
       self.errors = (options[:errors] || dependencies[:errors]).new
     end
 
-    def perform; end
+    def perform
+      raise NotImplementedError
+    end
 
     def errors?
       errors.present?

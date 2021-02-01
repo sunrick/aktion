@@ -1,5 +1,5 @@
 module Aktion
-  class Base < Core
+  class Rails
     class << self
       def default_args
         { headers: {}, params: {} }
