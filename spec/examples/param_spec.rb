@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe Aktion::V3::Params do
+RSpec.describe Aktion::Request do
   let(:result) { builder.call(params) }
   let(:subject) { result[:errors].to_h }
 

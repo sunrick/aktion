@@ -5,6 +5,6 @@ require 'aktion/rails'
 require 'aktion/controller'
 
 module Aktion
-  class Error < StandardError; end
+  # class Error < StandardError; end
   # Your code goes here...
 end

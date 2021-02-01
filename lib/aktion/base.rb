@@ -1,14 +1,14 @@
 require 'aktion/errors'
-require 'aktion/params'
+require 'aktion/request'
 require 'aktion/validations'
 
 module Aktion
   class Base
-    def self.params(&block)
+    def self.request(&block)
       if block_given?
-        @params = Params.build(&block)
+        @request = Request.build(&block)
       else
-        @params
+        @request
       end
     end
 
@@ -20,11 +20,11 @@ module Aktion
       end
     end
 
-    def self.perform(params = {}, options = {})
-      instance = new(params, options)
+    def self.perform(request = {}, options = {})
+      instance = new(request, options)
 
-      self.params&.call(instance.params, instance.errors)
-      self.validations&.call(instance.params, instance.errors)
+      self.request&.call(instance.request, instance.errors)
+      self.validations&.call(instance.request, instance.errors)
 
       if instance.errors?
         instance.failure(:unprocessable_entity, instance.errors.to_h)
@@ -39,16 +39,14 @@ module Aktion
       { errors: Errors }
     end
 
-    attr_accessor :params, :options, :status, :body, :errors
-    def initialize(params, options)
-      self.params = params
+    attr_accessor :request, :options, :status, :body, :errors
+    def initialize(request, options)
+      self.request = request
       self.options = options
       self.errors = (options[:errors] || dependencies[:errors]).new
     end
 
-    def perform
-      raise NotImplementedError
-    end
+    def perform; end
 
     def errors?
       errors.present?

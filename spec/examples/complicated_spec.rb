@@ -1,5 +1,5 @@
-class Complicated < Aktion::V3::Base
-  params do
+class Complicated < Aktion::Base
+  request do
     required :name, :string
 
     required :profile, :hash do
@@ -17,7 +17,7 @@ class Complicated < Aktion::V3::Base
   # validations { error(:name, 'is missing') { value.nil? } }
 
   def perform
-    success :ok, params
+    success :ok, request
   end
 end
 

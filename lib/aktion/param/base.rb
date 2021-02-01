@@ -20,12 +20,12 @@ module Aktion::Param
     def required(*args, &block)
       k, type, opts = parse(args)
       opts = opts.merge(required: true)
-      children << Aktion::V3::Param.build(k, type, opts, &block)
+      children << Aktion::Param.build(k, type, opts, &block)
     end
 
     def optional(*args, &block)
       k, type, opts = parse(args)
-      children << Aktion::V3::Param.build(k, type, opts, &block)
+      children << Aktion::Param.build(k, type, opts, &block)
     end
 
     def parse(args)

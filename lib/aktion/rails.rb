@@ -1,9 +1,8 @@
 module Aktion
   class Rails
-    class << self
-      def default_args
-        { headers: {}, params: {} }
-      end
+    def self.perform(request, options = {})
+      request = { headers: {}, params: {} }.merge(request)
+      super(request, options)
     end
 
     def params
@@ -14,8 +13,8 @@ module Aktion
       request[:headers]
     end
 
-    def allowed_validation_errors(errors)
-      errors.slice(:params, :headers)
-    end
+    # def allowed_validation_errors(errors)
+    #   errors.slice(:params, :headers)
+    # end
   end
 end

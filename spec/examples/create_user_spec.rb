@@ -11,20 +11,23 @@ class User
     true
   end
 end
-class CreateUser < Aktion::V3::Base
-  params do
+
+class CreateUser < Aktion::Base
+  request do
     required :name, :string
     required :profile, :hash do
       required :age, :integer
       optional :weight, :integer
     end
   end
+
   validations do
     # error(:name, 'only non-digits allowed') { value.match(/\d/) }
     error(:name) { message 'only non-digits allowed' if value.match(/\d/) }
   end
+
   def perform
-    user = User.new(params)
+    user = User.new(request)
     if user.save
       success :ok, user.to_h
     else

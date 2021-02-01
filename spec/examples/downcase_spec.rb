@@ -1,8 +1,8 @@
-class Downcase < Aktion::V3::Base
-  params { required(:name, :string) }
+class Downcase < Aktion::Base
+  request { required(:name, :string) }
 
   def perform
-    success :ok, name: params[:name].downcase
+    success :ok, name: request[:name].downcase
   end
 end
 

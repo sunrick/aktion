@@ -1,7 +1,7 @@
 require 'aktion/param'
 
 module Aktion
-  class Params
+  class Request
     def self.build(&block)
       instance = new
       instance.instance_eval(&block)
@@ -47,7 +47,7 @@ module Aktion
       raise 'opts must be present' if opts.nil?
     end
 
-    def call(params, errors = Aktion::V3::Errors.new)
+    def call(params, errors = Aktion::Errors.new)
       test = params.dup
       children.each do |child|
         test[child.key] =
