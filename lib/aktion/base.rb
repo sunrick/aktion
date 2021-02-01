@@ -1,6 +1,7 @@
 require 'aktion/errors'
 require 'aktion/request'
 require 'aktion/validations'
+require 'pry'
 
 module Aktion
   class Base
@@ -29,7 +30,11 @@ module Aktion
       if instance.errors?
         instance.failure(:unprocessable_entity, instance.errors.to_h)
       else
-        instance.perform
+        begin
+          instance.perform
+        rescue Aktion::PerformError => e
+          instance = e.instance
+        end
       end
 
       instance
@@ -79,6 +84,15 @@ module Aktion
 
     def response
       [status, body]
+    end
+
+    def run(klass, payload = nil)
+      instance = klass.perform(payload || request)
+      instance.success? ? instance : raise_error(instance)
+    end
+
+    def raise_error(instance)
+      raise Aktion::PerformError.new(instance)
     end
   end
 end

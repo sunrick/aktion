@@ -12,13 +12,5 @@ module Aktion
     def headers
       request[:headers]
     end
-
-    def response
-      { status: status, body: body }
-    end
-
-    # def allowed_validation_errors(errors)
-    #   errors.slice(:params, :headers)
-    # end
   end
 end
