@@ -72,10 +72,10 @@ module Aktion
       @success
     end
 
-    def failure(status, object)
+    def failure(status, object = nil)
       @failure = true
       self.status = status
-      self.body = object
+      self.body = object if object
     end
 
     def failure?
