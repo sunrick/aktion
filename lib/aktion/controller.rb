@@ -11,8 +11,8 @@ module Aktion
           view_const = "#{aktion_class_name}::#{view_class_name}".constantize
 
           define_method aktion do
-            klass_const.perform(aktion_request)
-            render view_const.new(aktion.body), status: aktion.status
+            instance = klass_const.perform(aktion_request)
+            render view_const.new(instance.body), status: instance.status
           end
         end
       end
