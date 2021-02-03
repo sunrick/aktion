@@ -26,7 +26,7 @@ module Aktion
     end
 
     def aktion_params
-      params.permit!.to_h
+      params.slic(:controller, :action).permit!.to_h
     end
   end
 end
