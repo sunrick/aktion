@@ -41,7 +41,7 @@ module Aktion
     end
 
     def aktion_params
-      params.slice(:controller, :action).permit!.to_h
+      params.except(:controller, :action).permit!.to_h
     end
   end
 end
