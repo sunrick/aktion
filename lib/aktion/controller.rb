@@ -10,7 +10,7 @@ module Aktion
       def aktions(aktions)
         aktions.each do |name, options|
           klass_const = options[:action]
-          view_const = options[:view]
+          component_const = options[:component]
           statuses = options[:statuses]
 
           define_method name do
@@ -22,7 +22,7 @@ module Aktion
               raise ActionController::RoutingError.new('Not Found')
             end
 
-            render view_const.new(instance.body), status: instance.status
+            render component_const.new(instance.body), status: instance.status
           end
         end
       end
