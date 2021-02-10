@@ -11,7 +11,6 @@ module Aktion
           @aktions[name] = { class: options[:class] || aktion_class(name) }
 
           define_method name do
-            binding.pry
             render name, locals: aktion.body, status: aktion.status
           end
         end
