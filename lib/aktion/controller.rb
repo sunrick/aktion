@@ -23,7 +23,7 @@ module Aktion
 
       def aktion_component(name)
         aktion_class_name = self.to_s.gsub('Controller', '')
-        view_class_name = "#{aktion_class_name}_component"
+        view_class_name = "#{aktion_class_name}Component"
         "#{aktion_class_name}::#{view_class_name}".constantize
       end
     end
