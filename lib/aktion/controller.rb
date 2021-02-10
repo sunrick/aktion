@@ -17,14 +17,14 @@ module Aktion
       end
 
       def aktion_class(name)
-        aktion_class_name = self.to_s.gsub('Controller', '')
-        "#{aktion_class_name}::#{name.to_s.classify}".constantize
+        module_name = self.to_s.gsub('Controller', '')
+        "#{module_name}::#{name.to_s.classify}".constantize
       end
 
       def aktion_component(name)
-        aktion_class_name = self.to_s.gsub('Controller', '')
-        view_class_name = "#{aktion_class_name}Component"
-        "#{aktion_class_name}::#{view_class_name}".constantize
+        module_name = self.to_s.gsub('Controller', '')
+        component_name = "#{name.to_s.classify}Component"
+        "#{module_name}::#{component_name}".constantize
       end
     end
 
