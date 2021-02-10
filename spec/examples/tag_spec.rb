@@ -1,11 +1,11 @@
-class Downcase < Aktion::Base
+class Upcase < Aktion::Base
   request { required :tag, :string }
 
   def perform
     if request[:tag] == 'fail'
-      failure :unprocessable_entity, { message: 'failed downcase' }
+      failure :unprocessable_entity, { message: 'failed upcase' }
     else
-      success :ok, request[:tag].downcase
+      success :ok, request[:tag].upcase
     end
   end
 end
@@ -14,7 +14,7 @@ class Tag < Aktion::Base
   request { required :tag, :string }
 
   def perform
-    tag = run(Downcase).body
+    tag = run(Upcase).body
     success :ok, { tag: "##{tag}" }
   end
 end
@@ -25,14 +25,14 @@ RSpec.describe Tag do
   context '.perform' do
     context 'with valid request' do
       let(:params) { { tag: 'RoFLCopter' } }
-      specify { expect(subject.response).to eq([:ok, { tag: '#roflcopter' }]) }
+      specify { expect(subject.response).to eq([:ok, { tag: '#ROFLCOPTER' }]) }
     end
 
     context 'with invalid request' do
       let(:params) { { tag: 'fail' } }
       specify do
         expect(subject.response).to eq(
-          [:unprocessable_entity, { message: 'failed downcase' }]
+          [:unprocessable_entity, { message: 'failed upcase' }]
         )
       end
     end

@@ -1,35 +1,49 @@
 module Aktion
   module Controller
     module ClassMethods
-      # aktion_class_name = self.to_s.gsub('Controller', '')
-      # aktion_const = "#{aktion_class_name}::#{name.to_s.classify}".constantize
+      def aktions(aktions = nil)
+        return @aktions ||= {} if aktions.nil?
 
-      # view_class_name = "#{aktion_class_name}_component"
-      # view_const = "#{aktion_class_name}::#{view_class_name}".constantize
+        @aktions = {}
 
-      def aktions(aktions)
         aktions.each do |name, options|
-          klass_const = options[:action]
-          component_const = options[:component]
-          statuses = options[:statuses]
+          options ||= {}
+          @aktions[name] = { class: options[:class] || aktion_class(name) }
 
           define_method name do
-            instance = klass_const.perform(aktion_request)
-            status_handler = statuses[instance.status] if instance.failure? &&
-              instance.status
-
-            if status_handler == :raise && instance.status == :not_found
-              raise ActionController::RoutingError.new('Not Found')
-            end
-
-            render component_const.new(instance.body), status: instance.status
+            binding.pry
+            render name, locals: aktion.body, status: aktion.status
           end
         end
       end
+
+      def aktion_class(name)
+        aktion_class_name = self.to_s.gsub('Controller', '')
+        aktion_const = "#{aktion_class_name}::#{name.to_s.classify}".constantize
+      end
+
+      # def aktion_component(name)
+      #   # view_class_name = "#{aktion_class_name}_component"
+      #   # view_const = "#{aktion_class_name}::#{view_class_name}".constantize
+      # end
     end
 
     def self.included(base)
       base.extend ClassMethods
+      base.before_action :perform_aktion
+    end
+
+    def aktions
+      @aktions
+    end
+
+    def perform_aktion
+      aktion_class = self.class.aktions[params[:action].to_sym][:class]
+      @aktion = aktion_class.perform(aktion_request)
+    end
+
+    def aktion
+      @aktion
     end
 
     def aktion_request
