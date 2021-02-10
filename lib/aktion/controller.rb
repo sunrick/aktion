@@ -11,20 +11,20 @@ module Aktion
           @aktions[name] = { class: options[:class] || aktion_class(name) }
 
           define_method name do
-            render name, locals: aktion.body, status: aktion.status
+            render_aktion(name, self.class.aktions[name])
           end
         end
       end
 
       def aktion_class(name)
         aktion_class_name = self.to_s.gsub('Controller', '')
-        aktion_const = "#{aktion_class_name}::#{name.to_s.classify}".constantize
+        "#{aktion_class_name}::#{name.to_s.classify}".constantize
       end
 
-      # def aktion_component(name)
-      #   # view_class_name = "#{aktion_class_name}_component"
-      #   # view_const = "#{aktion_class_name}::#{view_class_name}".constantize
-      # end
+      def aktion_component(name)
+        view_class_name = "#{aktion_class_name}_component"
+        "#{aktion_class_name}::#{view_class_name}".constantize
+      end
     end
 
     def self.included(base)
@@ -39,6 +39,10 @@ module Aktion
     def perform_aktion
       aktion_class = self.class.aktions[params[:action].to_sym][:class]
       @aktion = aktion_class.perform(aktion_request)
+    end
+
+    def render_aktion(name, _options)
+      render name, locals: aktion.body, status: aktion.status
     end
 
     def aktion
