@@ -11,6 +11,7 @@ module SingleParamWithValidation
       @email, @age = attrs.values_at('email', 'age')
     end
   end
+
   dry =
     Dry::Validation::Contract.build do
       params do

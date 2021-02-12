@@ -1,6 +1,4 @@
 class DowncaseAction < Aktion::Base
-  request { required(:name, :string) }
-
   def perform
     success :ok, name: request[:name].downcase
   end
@@ -18,11 +16,7 @@ class Downcase
   end
 
   def perform
-    if (message = is_not_string?(name))
-      failure :unprocessable_entity, { errors: { name: [message] } }
-    else
-      success :ok, { name: name.downcase }
-    end
+    success :ok, { name: name.downcase }
   end
 
   def success(status, object)
@@ -44,14 +38,13 @@ class Downcase
   def failure?
     @failure
   end
+end
 
-  private
+Benchmark.ips do |x|
+  # Typical mode, runs the block as many times as it can
+  x.report('class') { Downcase.perform(name: 'Rickard') }
+  x.report('aktion') { DowncaseAction.perform(name: 'Rickard') }
 
-  def is_not_string?(value)
-    if value.respond_to?(:to_str)
-      'is missing' if value.length == 0
-    else
-      'invalid type'
-    end
-  end
+  # Compare the iterations per second of the various reports!
+  x.compare!
 end
