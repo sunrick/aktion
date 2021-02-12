@@ -43,4 +43,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'sqlite3'
   spec.add_development_dependency 'rspec-rails'
   spec.add_development_dependency 'benchmark-ips'
+  spec.add_development_dependency 'ruby-prof'
 end

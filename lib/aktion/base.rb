@@ -6,26 +6,18 @@ require 'pry'
 module Aktion
   class Base
     def self.request(&block)
-      if block_given?
-        @request = Request.build(&block)
-      else
-        @request
-      end
+      @request = Request.build(&block)
     end
 
     def self.validations(&block)
-      if block_given?
-        @validations = Validations.build(&block)
-      else
-        @validations
-      end
+      @validations = Validations.build(&block)
     end
 
     def self.perform(request = {}, options = {})
       instance = new(request, options)
 
-      self.request&.call(instance.request, instance.errors)
-      self.validations&.call(instance.request, instance.errors)
+      @request&.call(instance.request, instance.errors)
+      @validations&.call(instance.request, instance.errors)
 
       if instance.errors?
         instance.failure(:unprocessable_entity, instance.errors.to_h)
@@ -42,25 +34,22 @@ module Aktion
       instance
     end
 
-    def dependencies
-      { errors: Errors }
-    end
+    attr_accessor :request, :options, :errors, :status, :body
 
-    attr_accessor :request, :options, :status, :body, :errors
     def initialize(request, options)
       self.request = request
       self.options = options
-      self.errors = (options[:errors] || dependencies[:errors]).new
     end
 
     def perform; end
 
     def errors?
-      errors.present?
+      errors&.present?
     end
 
     def error(key, message)
       @failure = true
+      self.errors ||= Errors.new
       errors.add(key, message)
     end
 
