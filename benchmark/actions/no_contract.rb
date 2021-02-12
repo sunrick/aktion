@@ -40,11 +40,12 @@ class Downcase
   end
 end
 
-Benchmark.ips do |x|
-  # Typical mode, runs the block as many times as it can
-  x.report('class') { Downcase.perform(name: 'Rickard') }
-  x.report('aktion') { DowncaseAction.perform(name: 'Rickard') }
+Bench.perform do
+  ips do |x|
+    x.report('class') { Downcase.perform(name: 'Rickard') }
+    x.report('aktion') { DowncaseAction.perform(name: 'Rickard') }
+    x.compare!
+  end
 
-  # Compare the iterations per second of the various reports!
-  x.compare!
+  profile(__FILE__) { DowncaseAction.perform(name: 'Rickard') }
 end

@@ -17,12 +17,16 @@ aktion = Aktion::Contract.build { request { required :name, :string } }
 
 params = { name: 'Rickard' }
 
-Benchmark.ips do |x|
-  x.report('active-model') do
-    user = User.new(params)
-    user.validate
+Bench.perform do
+  ips do |x|
+    x.report('active-model') do
+      user = User.new(params)
+      user.validate
+    end
+    x.report('dry-validation') { dry.call(params) }
+    x.report('aktion-request') { aktion.call(params) }
+    x.compare!
   end
-  x.report('dry-validation') { dry.call(params) }
-  x.report('aktion-request') { aktion.call(params) }
-  x.compare!
+
+  profile(__FILE__) { aktion.call(params) }
 end
