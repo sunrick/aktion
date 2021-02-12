@@ -1,5 +1,4 @@
-require_relative './downcase'
-require_relative './downcase_action'
+require_relative 'downcase'
 
 Benchmark.ips do |x|
   # Typical mode, runs the block as many times as it can
