@@ -1,6 +1,7 @@
 lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'aktion/version'
+require 'pry'
 
 Gem::Specification.new do |spec|
   spec.name = 'aktion'
@@ -24,7 +25,7 @@ Gem::Specification.new do |spec|
   spec.files =
     Dir.chdir(File.expand_path('..', __FILE__)) do
       `git ls-files -z`.split("\x0").reject do |f|
-        f.match(%r{^(test|spec|features)/})
+        f.match(%r{^(test|spec|features|benchmark)/})
       end
     end
   spec.bindir = 'exe'
@@ -41,4 +42,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rails'
   spec.add_development_dependency 'sqlite3'
   spec.add_development_dependency 'rspec-rails'
+  spec.add_development_dependency 'benchmark-ips'
 end
