@@ -32,7 +32,9 @@ module Aktion
       else
         begin
           instance.perform
-        rescue Aktion::PerformError => e
+        rescue Aktion::PerformError,
+               Aktion::PerformSuccess,
+               Aktion::PerformFailure => e
           instance = e.instance
         end
       end
@@ -68,6 +70,11 @@ module Aktion
       self.body = object
     end
 
+    def success!(status, object)
+      success(status, object)
+      raise Aktion::PerformSuccess.new(self)
+    end
+
     def success?
       @success
     end
@@ -76,6 +83,11 @@ module Aktion
       @failure = true
       self.status = status
       self.body = object if object
+    end
+
+    def failure!(status, object)
+      failure(status, object)
+      raise Aktion::PerformFailure.new(self)
     end
 
     def failure?
