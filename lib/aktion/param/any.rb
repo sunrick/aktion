@@ -42,21 +42,42 @@ module Aktion::Param
       end
     end
 
+    def invalid_type?(value); end
+
     def call(k:, value:, errors:)
-      message = Types.invalid?(type, value)
+      message = invalid_type?(value)
+
       if required? && message
         errors.add(k, message)
       elsif !message && !children.empty?
         value = call_children(k: k, value: value, errors: errors)
       end
+
       value
     end
 
     def call_children(k:, value:, errors:); end
   end
 
-  class String < Any; end
+  class String < Any
+    def invalid_type?(value)
+      if value.respond_to?(:to_str)
+        'is missing' if value.length == 0
+      else
+        'invalid type'
+      end
+    end
+  end
+
   class Array < Any
+    def invalid_type?(value)
+      if value.respond_to?(:to_ary)
+        'is missing' if value.empty?
+      else
+        'invalid type'
+      end
+    end
+
     def call_children(k:, value:, errors:)
       values = []
       return value if children.empty?
@@ -93,6 +114,14 @@ module Aktion::Param
   end
 
   class Hash < Any
+    def invalid_type?
+      if value.respond_to?(:to_hash)
+        'is missing' if value.empty?
+      else
+        'invalid type'
+      end
+    end
+
     def call_children(k:, value:, errors:)
       children.each do |child|
         child_key = "#{k}.#{child.key}"
@@ -105,5 +134,9 @@ module Aktion::Param
     end
   end
 
-  class Integer < Any; end
+  class Integer < Any
+    def invalid_type?(value)
+      'invalid type' unless value.respond_to?(:to_int)
+    end
+  end
 end

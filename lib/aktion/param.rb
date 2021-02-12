@@ -1,4 +1,4 @@
-require 'aktion/param/base'
+require 'aktion/param/any'
 
 module Aktion
   module Param

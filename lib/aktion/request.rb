@@ -48,13 +48,12 @@ module Aktion
     end
 
     def call(params, errors = Aktion::Errors.new)
-      test = params.dup
       children.each do |child|
-        test[child.key] =
+        params[child.key] =
           child.call(k: child.key, value: params[child.key], errors: errors)
       end
 
-      { test: test, params: params, errors: errors }
+      { params: params, errors: errors }
     end
   end
 end

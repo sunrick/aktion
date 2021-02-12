@@ -1,7 +1,7 @@
 require 'aktion/errors'
 require 'aktion/request'
 require 'aktion/validations'
-require 'pry'
+require 'aktion/contract'
 
 module Aktion
   class Base

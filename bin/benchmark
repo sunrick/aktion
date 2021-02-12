@@ -1,9 +1,0 @@
-#!/usr/bin/env ruby
-
-require 'bundler/setup'
-require 'aktion'
-require 'benchmark/ips'
-require 'ruby-prof'
-
-require_relative '../benchmark/index'
-require_relative '../benchmark/profile'
