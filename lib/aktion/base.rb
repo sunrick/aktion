@@ -5,19 +5,26 @@ require 'aktion/contract'
 
 module Aktion
   class Base
+    def self.contract(&block)
+      if block_given?
+        @contract = Contract.build(&block)
+      else
+        @contract ||= Contract.new
+      end
+    end
+
     def self.request(&block)
-      @request = Request.build(&block)
+      contract.request(&block)
     end
 
     def self.validations(&block)
-      @validations = Validations.build(&block)
+      contract.validations(&block)
     end
 
     def self.perform(request = {}, options = {})
       instance = new(request, options)
 
-      @request&.call(instance.request, instance.errors)
-      @validations&.call(instance.request, instance.errors)
+      @contract&.call(instance.request, instance.errors)
 
       if instance.errors?
         instance.failure(:unprocessable_entity, instance.errors.to_h)
