@@ -6,6 +6,10 @@ module Aktion
       self.errors = {}
     end
 
+    def [](key)
+      self.errors[key]
+    end
+
     def add(key, message)
       self.errors[key] = message
     end

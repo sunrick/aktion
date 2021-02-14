@@ -3,6 +3,9 @@ module Aktion
     def self.build(&block)
       instance = new
       instance.instance_eval(&block)
+
+      # instance._validations&.children&.each { |child| binding.pry }
+
       instance
     end
 
@@ -19,6 +22,14 @@ module Aktion
       @validations&.call(req, errors)
 
       { request: req, errors: errors }
+    end
+
+    def _request
+      @request
+    end
+
+    def _validations
+      @validations
     end
   end
 end
