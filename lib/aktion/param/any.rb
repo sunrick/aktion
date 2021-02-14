@@ -42,7 +42,9 @@ module Aktion::Param
       end
     end
 
-    def invalid_type?(value); end
+    def invalid_type?(value)
+      Aktion::Types::Any.invalid_type?(value)
+    end
 
     def call(k:, value:, errors:)
       message = invalid_type?(value)
@@ -61,25 +63,13 @@ module Aktion::Param
 
   class String < Any
     def invalid_type?(value)
-      if value.nil?
-        'is missing'
-      elsif value.respond_to?(:to_str)
-        'is missing' if value.length == 0
-      else
-        'invalid type'
-      end
+      Aktion::Types::String.invalid_type?(value)
     end
   end
 
   class Array < Any
     def invalid_type?(value)
-      if value.nil?
-        'is missing'
-      elsif value.respond_to?(:to_ary)
-        'is missing' if value.empty?
-      else
-        'invalid type'
-      end
+      Aktion::Types::Array.invalid_type?(value)
     end
 
     def call_children(k:, value:, errors:)
@@ -92,7 +82,7 @@ module Aktion::Param
             value.map.with_index do |hash, index|
               child_key = "#{k}.#{index}"
 
-              message = Hash.new.invalid_type?(hash)
+              message = Aktion::Types::Hash.invalid_type?(hash)
               if required? && message
                 errors.add(child_key, message)
               elsif !message
@@ -119,13 +109,7 @@ module Aktion::Param
 
   class Hash < Any
     def invalid_type?(value)
-      if value.nil?
-        'is missing'
-      elsif value.respond_to?(:to_hash)
-        'is missing' if value.empty?
-      else
-        'invalid type'
-      end
+      Aktion::Types::Hash.invalid_type?(value)
     end
 
     def call_children(k:, value:, errors:)
@@ -142,11 +126,7 @@ module Aktion::Param
 
   class Integer < Any
     def invalid_type?(value)
-      if value.nil?
-        'is missing'
-      elsif !value.respond_to?(:to_int)
-        'invalid type'
-      end
+      Aktion::Types::Integer.invalid_type?(value)
     end
   end
 end

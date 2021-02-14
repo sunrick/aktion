@@ -39,7 +39,7 @@ module Aktion
 
       def call(params, errors)
         value = params.dig(*split_key)
-        check = Check.new(key, value, params, errors)
+        check = Check.new(key, value, message, params, errors)
         returned_error = check.instance_eval(&block)
         errors.add(key, message) if !check.message_called? && returned_error
       end

@@ -1,10 +1,11 @@
 module Aktion
   class Check
-    attr_accessor :key, :value, :request, :errors
+    attr_accessor :key, :value, :message, :request, :errors
 
-    def initialize(key, value, request, errors)
+    def initialize(key, value, message, request, errors)
       self.key = key
       self.value = value
+      self.message = message
       self.request = request
       self.errors = errors
     end
@@ -15,7 +16,7 @@ module Aktion
       k, msg =
         case args.length
         when 0
-          raise Errors::MissingMessage if msg.nil?
+          raise Errors::MissingMessage if message.nil?
         when 1
           [key, args[0]]
         when 2
