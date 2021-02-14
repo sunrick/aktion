@@ -2,6 +2,7 @@ module Aktion::Param
   class Any
     attr_accessor :key,
                   :type,
+                  :validator,
                   :default,
                   :description,
                   :example,
@@ -42,12 +43,8 @@ module Aktion::Param
       end
     end
 
-    def invalid_type?(value)
-      Aktion::Types::Any.invalid_type?(value)
-    end
-
     def call(k:, value:, errors:)
-      message = invalid_type?(value)
+      message = validator.invalid_type?(value)
 
       if required? && message
         errors.add(k, message)
@@ -61,17 +58,9 @@ module Aktion::Param
     def call_children(k:, value:, errors:); end
   end
 
-  class String < Any
-    def invalid_type?(value)
-      Aktion::Types::String.invalid_type?(value)
-    end
-  end
+  class String < Any; end
 
   class Array < Any
-    def invalid_type?(value)
-      Aktion::Types::Array.invalid_type?(value)
-    end
-
     def call_children(k:, value:, errors:)
       values = []
       return value if children.empty?
@@ -108,10 +97,6 @@ module Aktion::Param
   end
 
   class Hash < Any
-    def invalid_type?(value)
-      Aktion::Types::Hash.invalid_type?(value)
-    end
-
     def call_children(k:, value:, errors:)
       children.each do |child|
         child_key = "#{k}.#{child.key}"
@@ -124,9 +109,5 @@ module Aktion::Param
     end
   end
 
-  class Integer < Any
-    def invalid_type?(value)
-      Aktion::Types::Integer.invalid_type?(value)
-    end
-  end
+  class Integer < Any; end
 end

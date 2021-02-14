@@ -2,7 +2,7 @@ require 'aktion/param/any'
 
 module Aktion
   module Param
-    TYPES = {
+    CLASSES = {
       any: Param::Any,
       string: Param::String,
       hash: Param::Hash,
@@ -10,10 +10,18 @@ module Aktion
       integer: Param::Integer
     }
 
-    def self.build(key, type, opts = {}, &block)
-      opts = options(key, type, opts)
+    TYPES = {
+      any: Types::Any,
+      string: Types::String,
+      hash: Types::Hash,
+      array: Types::Array,
+      integer: Types::Integer
+    }
 
-      instance = (TYPES[type] || TYPES[:any]).new(opts)
+    def self.build(key, type, opts = {}, &block)
+      options = options(key, type, opts)
+
+      instance = CLASSES[options[:type]].new(options)
 
       instance.instance_eval(&block) if block_given?
 
@@ -21,9 +29,12 @@ module Aktion
     end
 
     def self.options(key, type, opts)
+      type = type || :any
+
       {
         key: key,
-        type: type || :any,
+        type: type,
+        validator: TYPES[type],
         default: nil,
         description: nil,
         example: nil,
