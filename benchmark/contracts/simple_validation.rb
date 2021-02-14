@@ -33,7 +33,7 @@ aktion =
 
 params = { email: 'rickard@aktion.gem', age: 18 }
 
-Bench.perform do
+Bench.perform(__FILE__) do
   ips do |x|
     x.report('active-model') do
       user = User.new(params)
@@ -44,5 +44,5 @@ Bench.perform do
     x.compare!
   end
 
-  profile(__FILE__) { aktion.call(params) }
+  profile { aktion.call(params) }
 end

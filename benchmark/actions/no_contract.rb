@@ -40,12 +40,12 @@ class Downcase
   end
 end
 
-Bench.perform do
+Bench.perform(__FILE__) do
   ips do |x|
     x.report('class') { Downcase.perform(name: 'Rickard') }
     x.report('aktion') { DowncaseAction.perform(name: 'Rickard') }
     x.compare!
   end
 
-  profile(__FILE__) { DowncaseAction.perform(name: 'Rickard') }
+  profile { DowncaseAction.perform(name: 'Rickard') }
 end

@@ -17,7 +17,7 @@ aktion = Aktion::Contract.build { request { required :name, :string } }
 
 params = { name: 'Rickard' }
 
-Bench.perform do
+Bench.perform(__FILE__) do
   ips do |x|
     x.report('active-model') do
       user = User.new(params)
@@ -28,5 +28,5 @@ Bench.perform do
     x.compare!
   end
 
-  profile(__FILE__) { aktion.call(params) }
+  profile { aktion.call(params) }
 end

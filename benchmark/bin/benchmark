@@ -1,12 +1,4 @@
 #!/usr/bin/env ruby
 
 require 'bundler/setup'
-
-require 'aktion'
-require 'benchmark/ips'
-require 'ruby-prof'
-require 'dry-validation'
-require 'active_model'
-
-require_relative '../profiler'
-require_relative "../#{ARGV[0]}"
+require_relative '../benchmark'
