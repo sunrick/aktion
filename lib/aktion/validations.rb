@@ -18,8 +18,10 @@ module Aktion
     end
 
     def call(params, errors)
+      param_errors = errors.errors.dup
+
       children.each do |child|
-        next if errors[child.key]
+        next if param_errors[child.key]
         child.call(params, errors)
       end
     end

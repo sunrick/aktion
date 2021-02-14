@@ -3,9 +3,6 @@ module Aktion
     def self.build(&block)
       instance = new
       instance.instance_eval(&block)
-
-      # instance._validations&.children&.each { |child| binding.pry }
-
       instance
     end
 
