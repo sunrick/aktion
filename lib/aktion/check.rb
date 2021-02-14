@@ -1,24 +1,12 @@
 module Aktion
   class Check
-    attr_accessor :parent, :params, :key, :value, :errors
+    attr_accessor :key, :value, :request, :errors
 
-    def initialize(parent, params, errors)
-      self.parent = parent
-      self.params = params
+    def initialize(key, value, request, errors)
+      self.key = key
+      self.value = value
+      self.request = request
       self.errors = errors
-    end
-
-    def key
-      parent.key
-    end
-
-    def value
-      get(key, params)
-    end
-
-    def get(key, params)
-      keys = key.to_s.split('.').map(&:to_sym)
-      params.dig(*keys)
     end
 
     def message(*args)

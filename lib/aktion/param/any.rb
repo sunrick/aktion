@@ -61,7 +61,9 @@ module Aktion::Param
 
   class String < Any
     def invalid_type?(value)
-      if value.respond_to?(:to_str)
+      if value.nil?
+        'is missing'
+      elsif value.respond_to?(:to_str)
         'is missing' if value.length == 0
       else
         'invalid type'
@@ -71,7 +73,9 @@ module Aktion::Param
 
   class Array < Any
     def invalid_type?(value)
-      if value.respond_to?(:to_ary)
+      if value.nil?
+        'is missing'
+      elsif value.respond_to?(:to_ary)
         'is missing' if value.empty?
       else
         'invalid type'
@@ -88,7 +92,7 @@ module Aktion::Param
             value.map.with_index do |hash, index|
               child_key = "#{k}.#{index}"
 
-              message = Types.invalid?(:hash, hash)
+              message = Hash.new.invalid_type?(hash)
               if required? && message
                 errors.add(child_key, message)
               elsif !message
@@ -114,8 +118,10 @@ module Aktion::Param
   end
 
   class Hash < Any
-    def invalid_type?
-      if value.respond_to?(:to_hash)
+    def invalid_type?(value)
+      if value.nil?
+        'is missing'
+      elsif value.respond_to?(:to_hash)
         'is missing' if value.empty?
       else
         'invalid type'
@@ -136,7 +142,11 @@ module Aktion::Param
 
   class Integer < Any
     def invalid_type?(value)
-      'invalid type' unless value.respond_to?(:to_int)
+      if value.nil?
+        'is missing'
+      elsif !value.respond_to?(:to_int)
+        'invalid type'
+      end
     end
   end
 end

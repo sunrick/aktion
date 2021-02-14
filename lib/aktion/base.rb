@@ -50,13 +50,16 @@ module Aktion
 
     def perform; end
 
+    def errors
+      @errors ||= Errors.new
+    end
+
     def errors?
-      errors&.present?
+      @errors&.present?
     end
 
     def error(key, message)
       @failure = true
-      self.errors ||= Errors.new
       errors.add(key, message)
     end
 
