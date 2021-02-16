@@ -77,7 +77,13 @@ module Aktion
 
     class Integer
       def self.call(value)
-        Types.empty_string?(value) ? [value, MISSING] : [Integer(value), NIL]
+        if value.nil?
+          [value, MISSING]
+        elsif value.respond_to?(:to_int) || value.respond_to?(:to_str)
+          [Integer(value), NIL]
+        else
+          [value, INVALID]
+        end
       rescue ArgumentError, TypeError
         [value, INVALID]
       end
