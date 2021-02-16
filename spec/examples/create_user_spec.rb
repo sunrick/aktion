@@ -43,7 +43,7 @@ RSpec.describe CreateUser do
       let(:params) { Hash[name: 'Rickard', profile: { age: 30 }] }
       specify do
         expect(subject.response).to eq(
-          [:ok, { name: 'Rickard', profile: { age: 30 } }]
+          [:ok, { name: 'Rickard', profile: { age: 30, weight: nil } }]
         )
       end
     end
