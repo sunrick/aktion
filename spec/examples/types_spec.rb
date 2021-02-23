@@ -4,7 +4,6 @@ module TypesSpec
   OK = nil
 
   class StringChild < String; end
-  class Object < Object; end
 end
 
 RSpec.describe Aktion::Types::Any do
@@ -76,7 +75,7 @@ RSpec.describe Aktion::Types::Integer do
   context '.call' do
     [
       [nil, nil, TypesSpec::MISSING],
-      ['', '', TypesSpec::INVALID],
+      ['', '', TypesSpec::MISSING],
       ['a', 'a', TypesSpec::INVALID],
       ['1', 1, TypesSpec::OK],
       [1, 1, TypesSpec::OK],
@@ -160,6 +159,38 @@ RSpec.describe Aktion::Types::Array do
       [{ a: 1 }, { a: 1 }, TypesSpec::INVALID],
       [[], [], TypesSpec::MISSING],
       [[1], [1], TypesSpec::OK],
+      ['true', 'true', TypesSpec::INVALID],
+      ['false', 'false', TypesSpec::INVALID]
+    ].each do |input, output, message|
+      specify { expect(described_class.call(input)).to eq([output, message]) }
+    end
+  end
+end
+
+RSpec.describe Aktion::Types::Float do
+  context '.call' do
+    [
+      [nil, nil, TypesSpec::MISSING],
+      ['', '', TypesSpec::MISSING],
+      ['a', 'a', TypesSpec::INVALID],
+      [1, 1.0, TypesSpec::OK],
+      ['1', 1.0, TypesSpec::OK],
+      [1.12, 1.12, TypesSpec::OK],
+      ['1.12', 1.12, TypesSpec::OK],
+      [BigDecimal('1.55'), BigDecimal('1.55'), TypesSpec::OK],
+      [Date.parse('2021-01-01'), Date.parse('2021-01-01'), TypesSpec::INVALID],
+      [
+        DateTime.parse('2021-01-01'),
+        Date.parse('2021-01-01'),
+        TypesSpec::INVALID
+      ],
+      [Time.parse('2021-01-01'), Time.parse('2021-01-01'), TypesSpec::INVALID],
+      [true, true, TypesSpec::INVALID],
+      [false, false, TypesSpec::INVALID],
+      [{}, {}, TypesSpec::INVALID],
+      [{ a: 1 }, { a: 1 }, TypesSpec::INVALID],
+      [[], [], TypesSpec::INVALID],
+      [[1], [1], TypesSpec::INVALID],
       ['true', 'true', TypesSpec::INVALID],
       ['false', 'false', TypesSpec::INVALID]
     ].each do |input, output, message|

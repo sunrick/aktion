@@ -79,8 +79,10 @@ module Aktion
       def self.call(value)
         if value.nil?
           [value, MISSING]
-        elsif value.respond_to?(:to_int) || value.respond_to?(:to_str)
+        elsif value.respond_to?(:to_int)
           [Integer(value), NIL]
+        elsif value.respond_to?(:to_str)
+          value.length == 0 ? [value, MISSING] : [Integer(value), NIL]
         else
           [value, INVALID]
         end
@@ -119,8 +121,16 @@ module Aktion
 
     class Float
       def self.call(value)
-        Types.empty_string?(value) ? [value, MISSING] : [Float(value), NIL]
-      rescue ArgumentError, TypeError => e
+        if value.nil?
+          [value, MISSING]
+        elsif value.respond_to?(:to_int)
+          [Float(value), NIL]
+        elsif value.respond_to?(:to_str)
+          value.length == 0 ? [value, MISSING] : [Float(value), NIL]
+        else
+          [value, INVALID]
+        end
+      rescue ArgumentError, TypeError
         [value, INVALID]
       end
     end
