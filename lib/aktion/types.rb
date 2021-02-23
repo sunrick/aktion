@@ -137,34 +137,46 @@ module Aktion
 
     class BigDecimal
       def self.call(value)
-        Types.empty_string?(value) ? [value, INVALID] : [BigDecimal(value), NIL]
-      rescue ArgumentError, TypeError => e
+        if value.nil?
+          [value, MISSING]
+        elsif value.respond_to?(:to_d)
+          [value.to_d, NIL]
+        elsif value.respond_to?(:to_str)
+          value.length == 0 ? [value, MISSING] : [BigDecimal(value), NIL]
+        else
+          [value, INVALID]
+        end
+      rescue ArgumentError, TypeError
         [value, INVALID]
       end
     end
 
     class Date
       def self.call(value)
-        if Types.empty_string?(value)
+        if value.nil?
           [value, MISSING]
+        elsif value.respond_to?(:to_str) && value.length == 0
+          [value, MISSING]
+        elsif value.respond_to?(:to_date)
+          [value.to_date, NIL]
         else
-          value.is_a?(::Date) ? [value, NIL] : [::Date.parse(value), NIL]
+          [value, INVALID]
         end
-      rescue Date::Error, ArgumentError, TypeError, RangeError => e
+      rescue ::Date::Error, ArgumentError, TypeError, RangeError => e
         [value, INVALID]
       end
     end
 
     class DateTime
       def self.call(value)
-        if Types.empty_string?(value)
+        if value.nil?
           [value, MISSING]
+        elsif value.respond_to?(:to_datetime)
+          [value.to_datetime, NIL]
+        elsif value.respond_to?(:to_str)
+          value.length == 0 ? [value, MISSING] : [::DateTime.parse(value), NIL]
         else
-          if value.is_a?(::DateTime)
-            [value, NIL]
-          else
-            [::DateTime.parse(value), NIL]
-          end
+          [value, INVALID]
         end
       rescue ArgumentError, TypeError => e
         [value, INVALID]
