@@ -31,9 +31,7 @@ module Aktion
       else
         begin
           instance.perform
-        rescue Aktion::PerformError,
-               Aktion::PerformSuccess,
-               Aktion::PerformFailure => e
+        rescue Aktion::PerformSuccess, Aktion::PerformFailure => e
           instance = e.instance
         end
       end
@@ -99,11 +97,7 @@ module Aktion
 
     def run(klass, payload = nil)
       instance = klass.perform(payload || request)
-      instance.success? ? instance : raise_error(instance)
-    end
-
-    def raise_error(instance)
-      raise Aktion::PerformError.new(instance)
+      instance.success? ? instance : raise(Aktion::PerformFailure, instance)
     end
   end
 end
