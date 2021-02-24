@@ -171,10 +171,10 @@ module Aktion
       def self.call(value)
         if value.nil?
           [value, MISSING]
-        elsif value.respond_to?(:to_datetime)
-          [value.to_datetime, NIL]
         elsif value.respond_to?(:to_str)
           value.length == 0 ? [value, MISSING] : [::DateTime.parse(value), NIL]
+        elsif value.respond_to?(:to_datetime)
+          [value.to_datetime, NIL]
         else
           [value, INVALID]
         end
@@ -185,10 +185,14 @@ module Aktion
 
     class Time
       def self.call(value)
-        if Types.empty_string?(value)
+        if value.nil?
           [value, MISSING]
+        elsif value.respond_to?(:to_str)
+          value.length == 0 ? [value, MISSING] : [::Time.parse(value), NIL]
+        elsif value.respond_to?(:to_time)
+          [value.to_time, NIL]
         else
-          value.is_a?(::Time) ? [value, NIL] : [::Time.parse(value), NIL]
+          [value, INVALID]
         end
       rescue ArgumentError, TypeError => e
         [value, INVALID]
