@@ -127,7 +127,7 @@ GEM
       method_source
       rake (>= 0.8.7)
       thor (~> 1.0)
-    rake (10.5.0)
+    rake (12.3.3)
     rspec (3.10.0)
       rspec-core (~> 3.10.0)
       rspec-expectations (~> 3.10.0)
@@ -176,7 +176,7 @@ DEPENDENCIES
   bundler (~> 2.0)
   pry
   rails
-  rake (~> 10.0)
+  rake (~> 12.0)
   rspec (~> 3.0)
   rspec-rails
   sqlite3
