@@ -82,7 +82,7 @@ module Aktion
         elsif value.respond_to?(:to_int)
           [Integer(value), NIL]
         elsif value.respond_to?(:to_str)
-          value.length == 0 ? [value, MISSING] : [Integer(value), NIL]
+          value.length == 0 ? [value, MISSING] : [Integer(value, 10), NIL]
         else
           [value, INVALID]
         end
@@ -139,10 +139,10 @@ module Aktion
       def self.call(value)
         if value.nil?
           [value, MISSING]
-        elsif value.respond_to?(:to_d)
-          [value.to_d, NIL]
+        elsif value.respond_to?(:to_int)
+          [Float(value).to_d, NIL]
         elsif value.respond_to?(:to_str)
-          value.length == 0 ? [value, MISSING] : [BigDecimal(value), NIL]
+          value.length == 0 ? [value, MISSING] : [Float(value).to_d, NIL]
         else
           [value, INVALID]
         end
