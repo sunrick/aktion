@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     aktion (0.1.0)
+      dry-cli
 
 GEM
   remote: https://rubygems.org/
@@ -70,6 +71,8 @@ GEM
     concurrent-ruby (1.1.8)
     crass (1.0.6)
     diff-lcs (1.4.4)
+    dry-cli (0.6.0)
+      concurrent-ruby (~> 1.0)
     erubi (1.10.0)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
