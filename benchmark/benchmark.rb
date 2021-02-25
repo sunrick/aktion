@@ -4,7 +4,7 @@ require 'ruby-prof'
 require 'dry-validation'
 require 'active_model'
 
-require_relative 'profiler'
+require_relative 'bench'
 
 if ARGV[0] == nil
   Dir[File.dirname(__FILE__) + '/**/*.rb'].each { |file| require file }
