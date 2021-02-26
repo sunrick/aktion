@@ -29,9 +29,9 @@ module Aktion
     class I18n
       def self.translate(value)
         if value.is_a?(Symbol)
-          ::I18n.t(value)
+          ::I18n.t("aktion.#{value}")
         elsif value.sub!(/^@/, '')
-          ::I18n.t(value)
+          ::I18n.t("aktion.#{value}")
         else
           value
         end
