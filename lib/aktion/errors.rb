@@ -2,7 +2,7 @@ module Aktion
   class Errors
     attr_accessor :errors
 
-    def initialize(backend: Aktion::Messages::Backend)
+    def initialize(backend: Aktion::Messages.backend)
       @backend = backend
       @errors = {}
     end

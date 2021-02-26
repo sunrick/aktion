@@ -31,3 +31,5 @@
 
 en:
   hello: "Hello world"
+  missing: "is missing"
+  invalid: "invalid type"
