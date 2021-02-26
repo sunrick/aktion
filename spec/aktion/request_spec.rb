@@ -4,7 +4,6 @@ RSpec.describe Aktion::Request do
   let(:result) { builder.call(params) }
   let(:subject) { result[:errors].to_h }
 
-  EMPTY = 'is missing'
   MISSING = 'is missing'
   INVALID_TYPE = 'invalid type'
 
@@ -15,7 +14,7 @@ RSpec.describe Aktion::Request do
 
         context 'empty array' do
           let(:params) { { dogs: [] } }
-          it { is_expected.to eq(dogs: EMPTY) }
+          it { is_expected.to eq(dogs: MISSING) }
         end
 
         context 'present array' do
@@ -76,7 +75,7 @@ RSpec.describe Aktion::Request do
 
           context 'empty array' do
             let(:params) { { dogs: [] } }
-            it { is_expected.to eq(dogs: EMPTY) }
+            it { is_expected.to eq(dogs: MISSING) }
           end
 
           context 'present array' do
@@ -180,67 +179,3 @@ RSpec.describe Aktion::Request do
     end
   end
 end
-
-#   let(:builder) do
-#     described_class.build do
-#       required :dogs, :array do
-#         required :string
-#       end
-#     end
-#   end
-#   let(:params) { { dogs: [nil] } }
-
-#   specify { expect(errors.to_h).to eq(dogs: { '0': 'is missing' }) }
-# end
-
-# context 'something' do
-#   let(:builder) do
-#     described_class.build do
-#       required :dogs, :array do
-#         required :name, :string
-#       end
-#     end
-#   end
-#   let(:params) { { dogs: [nil] } }
-
-#   specify { expect(errors.to_h).to eq(dogs: { '0': 'is missing' }) }
-# end
-
-# context 'something' do
-#   let(:builder) do
-#     described_class.build do
-#       required :dogs, :array do
-#         required :name, :string
-#         required :chicken, :hash do
-#           required :name, :string
-#           required :hobbies, :array
-#         end
-#       end
-#     end
-#   end
-
-#   context 'array with nil' do
-#     let(:params) { { dogs: [{ name: nil, chicken: {} }] } }
-
-#     specify do
-#       expect(errors.to_h).to eq(
-#         dogs: { "0": { chicken: 'is missing', name: 'is missing' } },
-#       )
-#     end
-#   end
-
-#   context 'array with missing name' do
-#     let(:params) do
-#       {
-#         dogs: [
-#           { name: nil, chicken: { name: 'Chicken', hobbies: ['soccer'] } },
-#         ],
-#       }
-#     end
-
-#     specify do
-#       expect(errors.to_h).to eq(dogs: { "0": { name: 'is missing' } })
-#     end
-#   end
-# end
-# end

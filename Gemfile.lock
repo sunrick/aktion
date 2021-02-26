@@ -171,6 +171,7 @@ PLATFORMS
 DEPENDENCIES
   aktion!
   bundler (~> 2.0)
+  i18n
   pry
   rails
   rake (~> 12.0)
