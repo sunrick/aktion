@@ -1,11 +1,11 @@
 Aktion::Messages::Hash.translations.merge(
-  'yomomma' => { 'fat' => 'yo momma so fat, she on both sides of the family' }
+  'momma' => { 'fat' => 'yo momma so fat, she on both sides of the family' }
 )
 
 Bench.perform(__FILE__) do
   ips do |x|
     x.report('hash.key') { Aktion::Messages::Hash.translate(:missing) }
-    x.report('hash.@key') { Aktion::Messages::Hash.translate('@yomomma.fat') }
+    x.report('hash.@key') { Aktion::Messages::Hash.translate('@momma.fat') }
     x.report('hash.message') do
       Aktion::Messages::Hash.translate('random message')
     end
