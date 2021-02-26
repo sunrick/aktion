@@ -2,26 +2,27 @@ module Aktion
   class Errors
     attr_accessor :errors
 
-    def initialize
-      self.errors = {}
+    def initialize(backend: Aktion::Messages::Backend)
+      @backend = backend
+      @errors = {}
     end
 
     def [](key)
-      self.errors[key]
+      @errors[key]
     end
 
     def add(key, message)
-      self.errors[key] = message
+      @errors[key] = @backend.translate(message)
     end
 
     def present?
-      !errors.empty?
+      !@errors.empty?
     end
 
     def to_h
       build_errors = {}
 
-      errors.each do |key, messages|
+      @errors.each do |key, messages|
         keys = key.to_s.split('.')
         length = keys.length
 

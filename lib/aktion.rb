@@ -1,4 +1,5 @@
 require 'aktion/version'
+require 'aktion/messages'
 require 'aktion/types'
 require 'aktion/base'
 require 'aktion/rails'

@@ -2,8 +2,8 @@ require 'bigdecimal'
 
 module Aktion
   module Types
-    MISSING = 'is missing'.freeze
-    INVALID = 'invalid type'.freeze
+    MISSING = :missing
+    INVALID = :invalid
     NIL = nil.freeze
 
     def self.empty_string?(value)
@@ -162,7 +162,7 @@ module Aktion
         else
           [value, INVALID]
         end
-      rescue ::Date::Error, ArgumentError, TypeError, RangeError => e
+      rescue ArgumentError, TypeError, RangeError => e
         [value, INVALID]
       end
     end

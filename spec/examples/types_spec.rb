@@ -1,6 +1,6 @@
 module TypesSpec
-  MISSING = 'is missing'
-  INVALID = 'invalid type'
+  MISSING = :missing
+  INVALID = :invalid
   OK = nil
 
   class StringChild < String; end
