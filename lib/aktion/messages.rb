@@ -5,7 +5,7 @@ module Aktion
     end
 
     def self.backend
-      @backend ||= BACKENDS[:hash]
+      @backend ||= BACKENDS[Aktion.config.backend || :hash]
     end
 
     class Hash
