@@ -10,7 +10,7 @@ module Aktion
       def self.translate(value)
         if value.is_a?(Symbol)
           translations[value]
-        elsif value.starts_with?('@')
+        elsif value.sub!(/^@/, '')
           translations.dig(*value.split('.'))
         else
           value
