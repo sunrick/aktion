@@ -12,7 +12,7 @@ module Aktion
     end
 
     def add(key, message)
-      @errors.push([key, @backend.translate(message)])
+      @errors.push([key, message])
     end
 
     def merge(hash)
@@ -26,19 +26,19 @@ module Aktion
     def to_h
       build_errors = {}
 
-      @errors.each do |key, messages|
+      @errors.each do |key, message|
         keys = key.to_s.split('.')
         length = keys.length
 
         if length > 1
           last_key = keys.pop.to_sym
 
-          hash = { last_key => messages }
+          hash = { last_key => @backend.translate(message) }
           keys.reverse.each { |k| hash = { k.to_sym => hash } }
 
           deep_merge(build_errors, hash)
         else
-          build_errors[key] = messages
+          build_errors[key] = @backend.translate(message)
         end
       end
 
