@@ -56,9 +56,9 @@ RSpec.describe Complicated do
           [
             :unprocessable_entity,
             {
-              name: 'is missing',
-              profile: 'is missing',
-              dog_names: 'is missing'
+              name: ['is missing'],
+              profile: ['is missing'],
+              dog_names: ['is missing']
             }
           ]
         )
@@ -72,9 +72,9 @@ RSpec.describe Complicated do
           [
             :unprocessable_entity,
             {
-              name: 'is missing',
-              profile: { age: 'is missing' },
-              dog_names: 'is missing'
+              name: ['is missing'],
+              profile: { age: ['is missing'] },
+              dog_names: ['is missing']
             }
           ]
         )

@@ -14,7 +14,7 @@ RSpec.describe Aktion::Request do
 
         context 'empty array' do
           let(:params) { { dogs: [] } }
-          it { is_expected.to eq(dogs: MISSING) }
+          it { is_expected.to eq(dogs: [MISSING]) }
         end
 
         context 'present array' do
@@ -75,7 +75,7 @@ RSpec.describe Aktion::Request do
 
           context 'empty array' do
             let(:params) { { dogs: [] } }
-            it { is_expected.to eq(dogs: MISSING) }
+            it { is_expected.to eq(dogs: [MISSING]) }
           end
 
           context 'present array' do
@@ -89,10 +89,10 @@ RSpec.describe Aktion::Request do
               it do
                 is_expected.to eq(
                   dogs: {
-                    "1": MISSING,
-                    "2": MISSING,
-                    "4": INVALID_TYPE,
-                    "5": INVALID_TYPE
+                    "1": [MISSING],
+                    "2": [MISSING],
+                    "4": [INVALID_TYPE],
+                    "5": [INVALID_TYPE]
                   }
                 )
               end
@@ -103,11 +103,11 @@ RSpec.describe Aktion::Request do
               it do
                 is_expected.to eq(
                   dogs: {
-                    "0": MISSING,
-                    "1": MISSING,
-                    "2": INVALID_TYPE,
-                    "3": INVALID_TYPE,
-                    "4": INVALID_TYPE
+                    "0": [MISSING],
+                    "1": [MISSING],
+                    "2": [INVALID_TYPE],
+                    "3": [INVALID_TYPE],
+                    "4": [INVALID_TYPE]
                   }
                 )
               end

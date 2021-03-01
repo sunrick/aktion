@@ -51,7 +51,7 @@ RSpec.describe CreateUser do
       let(:params) { Hash[name: 'Rickard13', profile: { age: 30 }] }
       specify do
         expect(subject.response).to eq(
-          [:unprocessable_entity, { name: 'only non-digits allowed' }]
+          [:unprocessable_entity, { name: ['only non-digits allowed'] }]
         )
       end
     end

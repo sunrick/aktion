@@ -74,12 +74,39 @@ module Aktion
     def failure(status, object = nil)
       @failure = true
       self.status = status
-      errors.merge(object) if object
+      self.body = object if object
     end
 
     def failure!(status, object)
       failure(status, object)
-      raise Aktion::PerformFailure.new(self)
+      raise Aktion::PerformFailure, self
+    end
+
+    def errors?
+      errors.present?
+    end
+
+    def error(key, message)
+      @failure = true
+      self.status = :unprocessable_entity
+      errors.add(key, message)
+    end
+
+    def error!(key, message)
+      error(key, message)
+      raise Aktion::PerformError, self
+    end
+
+    def respond(status = nil, object = nil, success = nil)
+      self.status = status if status
+      self.object = object if object
+      @success = sucesss if success
+      @failure = !success unless success.nil?
+    end
+
+    def respond!(status = nil, object = nil, success = nil)
+      respond(status, object, success)
+      raise Aktion::PerformRespond, self
     end
 
     def failure?
@@ -91,7 +118,7 @@ module Aktion
     end
 
     def body
-      failure? ? errors.to_h : @body
+      errors? ? errors.to_h : @body
     end
 
     def run(klass, payload = nil)

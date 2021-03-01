@@ -1,7 +1,5 @@
 module Aktion
   class Errors
-    attr_reader :error
-
     def initialize(backend: Aktion::Messages.backend)
       @backend = backend
       @store = []
@@ -31,12 +29,13 @@ module Aktion
         if length > 1
           last_key = keys.pop.to_sym
 
-          hash = { last_key => @backend.translate(message) }
+          hash = { last_key => [@backend.translate(message)] }
           keys.reverse.each { |k| hash = { k.to_sym => hash } }
 
           deep_merge(@errors, hash)
         else
-          @errors[key] = @backend.translate(message)
+          @errors[key] ||= []
+          @errors[key].push(@backend.translate(message))
         end
       end
 
@@ -45,14 +44,14 @@ module Aktion
 
     private
 
-    def deep_merge(hash, other_hash, &block)
+    attr_reader :store
+
+    def deep_merge(hash, other_hash)
       hash.merge!(other_hash) do |key, this_val, other_val|
         if this_val.is_a?(Hash) && other_val.is_a?(Hash)
-          deep_merge(this_val, other_val, &block)
-        elsif block_given?
-          block.call(key, this_val, other_val)
+          deep_merge(this_val, other_val)
         else
-          other_val
+          Array(this_val) + Array(other_val)
         end
       end
     end

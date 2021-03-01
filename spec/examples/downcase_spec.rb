@@ -21,7 +21,7 @@ RSpec.describe Downcase do
       let(:params) { Hash[name: nil] }
       specify do
         expect(subject.response).to eq(
-          [:unprocessable_entity, { name: 'is missing' }]
+          [:unprocessable_entity, { name: ['is missing'] }]
         )
       end
     end
