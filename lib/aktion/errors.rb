@@ -1,32 +1,30 @@
 module Aktion
   class Errors
-    attr_accessor :errors
+    attr_reader :error
 
     def initialize(backend: Aktion::Messages.backend)
       @backend = backend
-      @errors = []
-    end
-
-    def [](key)
-      @errors[key]
+      @store = []
     end
 
     def add(key, message)
-      @errors.push([key, message])
+      @store.push([key, message])
     end
 
     def merge(hash)
-      hash.each { |key, value| @errors.push([key, value]) }
+      hash.each { |key, value| @store.push([key, value]) }
     end
 
     def present?
-      !@errors.empty?
+      !@store.empty?
     end
 
     def to_h
-      build_errors = {}
+      return @errors if @errors
 
-      @errors.each do |key, message|
+      @errors = {}
+
+      @store.each do |key, message|
         keys = key.to_s.split('.')
         length = keys.length
 
@@ -36,13 +34,13 @@ module Aktion
           hash = { last_key => @backend.translate(message) }
           keys.reverse.each { |k| hash = { k.to_sym => hash } }
 
-          deep_merge(build_errors, hash)
+          deep_merge(@errors, hash)
         else
-          build_errors[key] = @backend.translate(message)
+          @errors[key] = @backend.translate(message)
         end
       end
 
-      build_errors
+      @errors
     end
 
     private
