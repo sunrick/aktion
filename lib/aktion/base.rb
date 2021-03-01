@@ -27,7 +27,7 @@ module Aktion
       @contract&.call(instance.request, instance.errors)
 
       if instance.errors?
-        instance.failure(:unprocessable_entity, instance.errors.to_h)
+        instance.failure(:unprocessable_entity)
       else
         begin
           instance.perform
@@ -56,11 +56,6 @@ module Aktion
       @errors&.present?
     end
 
-    def error(key, message)
-      @failure = true
-      errors.add(key, message)
-    end
-
     def success(status, object)
       @success = true
       self.status = status
@@ -79,7 +74,7 @@ module Aktion
     def failure(status, object = nil)
       @failure = true
       self.status = status
-      self.body = object if object
+      errors.merge(object) if object
     end
 
     def failure!(status, object)
@@ -93,6 +88,10 @@ module Aktion
 
     def response
       [status, body]
+    end
+
+    def body
+      failure? ? errors.to_h : @body
     end
 
     def run(klass, payload = nil)

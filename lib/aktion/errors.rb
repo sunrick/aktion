@@ -4,7 +4,7 @@ module Aktion
 
     def initialize(backend: Aktion::Messages.backend)
       @backend = backend
-      @errors = {}
+      @errors = []
     end
 
     def [](key)
@@ -12,7 +12,11 @@ module Aktion
     end
 
     def add(key, message)
-      @errors[key] = @backend.translate(message)
+      @errors.push([key, @backend.translate(message)])
+    end
+
+    def merge(hash)
+      hash.each { |key, value| @errors.push([key, value]) }
     end
 
     def present?
