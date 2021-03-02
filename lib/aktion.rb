@@ -15,15 +15,7 @@ module Aktion
     end
   end
 
-  class PerformSuccess < StandardError
-    attr_accessor :instance
-
-    def initialize(instance)
-      self.instance = instance
-    end
-  end
-
-  class PerformFailure < StandardError
+  class PerformRespond < StandardError
     attr_accessor :instance
 
     def initialize(instance)
