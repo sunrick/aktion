@@ -32,62 +32,51 @@ Or install it yourself as:
 - Self Documenting
 - Easy to test
 - Use anywhere (Good enough)
-- Opt in performance enhancements
 
 #### Simple and Intuitive API
 
 ```ruby
 # app/actions/users/create.rb
 class Users::Create < Aktion::Base
-  attr_accessor :user
-
-  schema do
-    required(:params).hash do
-      required(:email).filled
-    end
-  end
+  request { required :name, :string }
 
   def perform
-    self.user = User.new(email: params[:email])
-    if user.save
-      success(:created, user)
+    @user = User.new(name: request[:name])
+    if @user.save
+      respond :created, user: @user
     else
-      failure(:unprocessable_entity, user.errors.messages)
+      respond :unprocessable_entity, @user.errors.messages
     end
   end
 end
 ```
 
 ```ruby
+action = Users::Create.perform(name: 'Rickard')
+action.success? # => true
+action.response # => [:created, user: <User name: 'Rickard'>]
+action.status # => :created
+action.body # => { user: <User name: 'Rickard'> }
+```
+
+```ruby
 RSpec.describe Users::Create do
-  let(:args) do
-    {
-      params: { email: 'sunrick@aktion.gem' }
-    }
-  end
+  let(:action) { described_class.perform(request) }
 
   context 'good request' do
+    let(:request) { { name: 'Rickard' } }
+
     it 'should save the user' do
-      action = described_class.perform(args)
-      expect(action.success?).to eq(true)
-      expect(action.response).to eq(
-        json: { email: 'sunrick@aktion.gem' },
-        status: :created
-      )
-      expect(User.count).to eq(1)
+      expect { action }.to change { User.count }.by(1)
+      expect(action.response).to eq(:created, user: User.first)
     end
   end
 
   context 'bad request' do
-    before { args[:params][:email] = '' }
+    let(:request) { { name: '' } }
 
     it 'should fail' do
-      action = described_class.perform(args)
-      expect(action.failure?).to eq(true)
-      expect(action.response).to eq(
-        json: errors: { email: ['missing'] },
-        status: :unprocessable_entity
-      )
+      expect(action.response).to eq(:unprocessable_entity, name: ['is missing'])
       expect(User.count).to eq(0)
     end
   end
@@ -103,22 +92,11 @@ class UsersController < ApplicationController
   aktions [:create]
 end
 
-Rails.application.routes.draw do
-  resources :users, only: [:create]
-end
-```
-
-```ruby
-Users::Create.perform(
-  params:  { email: 'sunrick@aktion.gem' },
-  options: { async: true }
-)
+Rails.application.routes.draw { resources :users, only: [:create] }
 ```
 
 ```
-bundle exec aktion g users:create
-bundle exec aktion g users:index,create,show,update,destroy
-bundle exec aktion g users
+bundle exec aktion g users create
 ```
 
 ## Development
