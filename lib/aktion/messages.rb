@@ -9,10 +9,8 @@ module Aktion
     end
 
     class Hash
-      DEFAULT_TRANSLATIONS = { missing: 'is missing', invalid: 'invalid type' }
-
       def self.translations
-        @translations || DEFAULT_TRANSLATIONS
+        @translations ||= { missing: 'is missing', invalid: 'invalid type' }
       end
 
       def self.translate(value)
