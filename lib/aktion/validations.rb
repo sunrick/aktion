@@ -18,7 +18,10 @@ module Aktion
     end
 
     def call(params, errors)
-      children.each { |child| child.call(params, errors) }
+      children.each do |child|
+        # next if errors[child.key]
+        child.call(params, errors)
+      end
     end
   end
 end
