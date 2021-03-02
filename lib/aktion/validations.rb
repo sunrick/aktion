@@ -19,7 +19,7 @@ module Aktion
 
     def call(params, errors)
       children.each do |child|
-        # next if errors[child.key]
+        next if errors[child.key]&.include?(:missing)
         child.call(params, errors)
       end
     end

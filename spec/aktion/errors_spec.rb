@@ -7,7 +7,7 @@ RSpec.describe Aktion::Errors do
     context 'single message' do
       specify do
         errors.add(:name, :missing)
-        expect(errors.send(:store)).to eq([%i[name missing]])
+        expect(errors.send(:store)).to eq(name: [:missing])
       end
     end
 
@@ -15,7 +15,7 @@ RSpec.describe Aktion::Errors do
       specify do
         errors.add(:name, :missing)
         errors.add(:name, :ugly)
-        expect(errors.send(:store)).to eq([%i[name missing], %i[name ugly]])
+        expect(errors.send(:store)).to eq(name: %i[missing ugly])
       end
     end
   end

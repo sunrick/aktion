@@ -2,15 +2,20 @@ module Aktion
   class Errors
     def initialize(backend: Aktion::Messages.backend)
       @backend = backend
-      @store = []
+      @store = {}
+    end
+
+    def [](key)
+      @store[key]
     end
 
     def add(key, message)
-      @store.push([key, message])
+      @store[key] ||= []
+      @store[key].push(message)
     end
 
     def merge(hash)
-      hash.each { |key, value| @store.push([key, value]) }
+      hash.each { |key, value| add(key, value) }
     end
 
     def present?
@@ -22,20 +27,20 @@ module Aktion
 
       @errors = {}
 
-      @store.each do |key, message|
+      @store.each do |key, messages|
+        messages = messages.map { |m| @backend.translate(m) }
         keys = key.to_s.split('.')
         length = keys.length
 
         if length > 1
           last_key = keys.pop.to_sym
 
-          hash = { last_key => [@backend.translate(message)] }
+          hash = { last_key => messages }
           keys.reverse.each { |k| hash = { k.to_sym => hash } }
 
           deep_merge(@errors, hash)
         else
-          @errors[key] ||= []
-          @errors[key].push(@backend.translate(message))
+          @errors[key] = messages
         end
       end
 
