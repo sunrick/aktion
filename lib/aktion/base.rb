@@ -135,16 +135,13 @@ module Aktion
       errors.present?
     end
 
-    def respond(status = nil, object = nil, success = nil)
+    def respond(status = nil, object = nil)
       self.status = status if status
       self.body = object if object
-
-      @success = sucesss if success
-      @failure = !success unless success.nil?
     end
 
-    def respond!(status = nil, object = nil, success = nil)
-      respond(status, object, success)
+    def respond!(status = nil, object = nil)
+      respond(status, object)
       raise Aktion::PerformRespond, self
     end
 
