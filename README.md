@@ -68,7 +68,7 @@ RSpec.describe Users::Create do
 
     it 'should save the user' do
       expect { action }.to change { User.count }.by(1)
-      expect(action.response).to eq(:created, user: User.first)
+      expect(action.response).to eq([:created, user: User.first])
     end
   end
 
@@ -76,7 +76,9 @@ RSpec.describe Users::Create do
     let(:request) { { name: '' } }
 
     it 'should fail' do
-      expect(action.response).to eq(:unprocessable_entity, name: ['is missing'])
+      expect(action.response).to eq(
+        [:unprocessable_entity, name: ['is missing']],
+      )
       expect(User.count).to eq(0)
     end
   end
