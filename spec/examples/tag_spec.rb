@@ -3,9 +3,9 @@ class Upcase < Aktion::Base
 
   def perform
     if request[:tag] == 'fail'
-      failure :unprocessable_entity, { message: 'failed upcase' }
+      respond :unprocessable_entity, { message: 'failed upcase' }
     else
-      success :ok, request[:tag].upcase
+      respond :ok, request[:tag].upcase
     end
   end
 end
@@ -15,7 +15,7 @@ class Tag < Aktion::Base
 
   def perform
     tag = run(Upcase).body
-    success :ok, { tag: "##{tag}" }
+    respond :ok, { tag: "##{tag}" }
   end
 end
 

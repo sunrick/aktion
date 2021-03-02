@@ -1,3 +1,5 @@
+require 'spec_helper'
+
 class User
   attr_accessor :name, :profile
   def initialize(name:, profile: {})
@@ -22,20 +24,19 @@ class CreateUser < Aktion::Base
   end
 
   validations do
-    # error(:name, 'only non-digits allowed') { value.match(/\d/) }
     error(:name) { message 'only non-digits allowed' if value.match(/\d/) }
   end
 
   def perform
     user = User.new(request)
     if user.save
-      success :ok, user.to_h
+      respond :ok, user.to_h
     else
-      failure :unprocessable_entity, user.errors.messages
+      respond :unprocessable_entity, user.errors.messages
     end
   end
 end
-require 'spec_helper'
+
 RSpec.describe CreateUser do
   let(:subject) { described_class.perform(params) }
   context '.perform' do

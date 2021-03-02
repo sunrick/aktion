@@ -8,23 +8,6 @@ class SimpleRespond < Aktion::Base
   end
 end
 
-class NegativeRespond < Aktion::Base
-  request { required :name, :string }
-
-  def perform
-    respond :unprocessable_entity, { message: 'sorry' }
-  end
-end
-
-class BangRespond < Aktion::Base
-  request { required :name, :string }
-
-  def perform
-    respond! :ok, { name: request[:name] }
-    raise StandardError, 'we did not respond'
-  end
-end
-
 RSpec.describe SimpleRespond do
   let(:subject) { described_class.perform(params) }
 
@@ -34,6 +17,14 @@ RSpec.describe SimpleRespond do
       expect(subject.response).to eq([:ok, { name: 'Rickard' }])
       expect(subject.success?).to eq(true)
     end
+  end
+end
+
+class NegativeRespond < Aktion::Base
+  request { required :name, :string }
+
+  def perform
+    respond :unprocessable_entity, { message: 'sorry' }
   end
 end
 
@@ -49,6 +40,15 @@ RSpec.describe NegativeRespond do
       expect(subject.success?).to eq(false)
       expect(subject.failure?).to eq(true)
     end
+  end
+end
+
+class BangRespond < Aktion::Base
+  request { required :name, :string }
+
+  def perform
+    respond! :ok, { name: request[:name] }
+    raise StandardError, 'we did not respond'
   end
 end
 

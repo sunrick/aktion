@@ -93,7 +93,7 @@ module Aktion
       @contract&.call(instance.request, instance.errors)
 
       if instance.errors?
-        instance.failure(:unprocessable_entity)
+        instance.respond(:unprocessable_entity)
       else
         begin
           instance.perform
@@ -122,17 +122,6 @@ module Aktion
       @errors&.present?
     end
 
-    def success(status, object)
-      @success = true
-      self.status = status
-      self.body = object
-    end
-
-    def success!(status, object)
-      success(status, object)
-      raise Aktion::PerformSuccess.new(self)
-    end
-
     def success?
       code = STATUSES[self.status]
       code.between?(100, 399) ? true : false
@@ -142,29 +131,8 @@ module Aktion
       !success?
     end
 
-    def failure(status, object = nil)
-      self.status = status
-      self.body = object if object
-    end
-
-    def failure!(status, object)
-      failure(status, object)
-      raise Aktion::PerformRespond, self
-    end
-
     def errors?
       errors.present?
-    end
-
-    def error(key, message)
-      @failure = true
-      self.status = :unprocessable_entity
-      errors.add(key, message)
-    end
-
-    def error!(key, message)
-      error(key, message)
-      raise Aktion::PerformRespond, self
     end
 
     def respond(status = nil, object = nil, success = nil)
@@ -180,12 +148,33 @@ module Aktion
       raise Aktion::PerformRespond, self
     end
 
+    def error(key, message)
+      errors.add(key, message)
+    end
+
+    def error!(key, message)
+      error(key, message)
+      raise Aktion::PerformRespond, self
+    end
+
     def response
       [status, body]
     end
 
+    def status
+      if @status
+        @status
+      elsif errors?
+        @status = :unprocessable_entity
+      end
+    end
+
     def body
-      errors? ? errors.to_h : @body
+      if @body
+        @body
+      elsif errors?
+        @body = errors.to_h
+      end
     end
 
     def run(klass, payload = nil)

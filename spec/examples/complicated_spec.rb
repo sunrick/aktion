@@ -4,20 +4,13 @@ class Complicated < Aktion::Base
 
     required :profile, :hash do
       required :age, :integer
-      # required :hobbies, :array
     end
 
     required :dog_names, :array
-
-    # required :dogs, :array do
-    #   required :name, :string
-    # end
   end
 
-  # validations { error(:name, 'is missing') { value.nil? } }
-
   def perform
-    success :ok, request
+    respond :ok, request
   end
 end
 

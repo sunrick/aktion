@@ -2,7 +2,7 @@ class Downcase < Aktion::Base
   request { required(:name, :string) }
 
   def perform
-    success :ok, name: request[:name].downcase
+    respond :ok, name: request[:name].downcase
   end
 end
 
