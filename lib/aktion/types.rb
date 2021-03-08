@@ -20,7 +20,7 @@ module Aktion
       end
     end
 
-    class Single
+    class Class
       def self.call(value, type)
         if value.nil? || (value.respond_to?(:to_str) && value.length == 0)
           [value, MISSING]

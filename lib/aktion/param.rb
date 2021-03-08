@@ -3,7 +3,7 @@ module Aktion
     def self.build(key, type, opts = {}, &block)
       options = options(key, type, opts)
 
-      instance = CLASSES[options[:type]].new(options)
+      instance = get_class(options[:type]).new(options)
 
       instance.instance_eval(&block) if block_given?
 
@@ -26,8 +26,12 @@ module Aktion
       }.merge(opts)
     end
 
+    def self.get_class(type)
+      type.is_a?(::Class) ? CLASSES[:class] : CLASSES[type]
+    end
+
     def self.type_checker(type)
-      type.class == Class ? TYPES[:single] : TYPES[type]
+      type.is_a?(::Class) ? TYPES[:class] : TYPES[type]
     end
 
     class Any
@@ -93,9 +97,9 @@ module Aktion
       def call_children(k:, value:, errors:); end
     end
 
-    class Single < Any
+    class Class < Any
       def type_check(value)
-        type_checker.call(value, key)
+        type_checker.call(value, type)
       end
     end
 
@@ -160,7 +164,7 @@ module Aktion
 
     CLASSES = {
       any: Param::Any,
-      types: Param::Single,
+      class: Param::Class,
       boolean: Param::Boolean,
       string: Param::String,
       integer: Param::Integer,
@@ -175,7 +179,7 @@ module Aktion
 
     TYPES = {
       any: Types::Any,
-      single: Types::Single,
+      class: Types::Class,
       boolean: Types::Boolean,
       string: Types::String,
       integer: Types::Integer,

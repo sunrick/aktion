@@ -44,7 +44,7 @@ RSpec.describe Aktion::Types::Any do
   end
 end
 
-RSpec.describe Aktion::Types::Single do
+RSpec.describe Aktion::Types::Class do
   context '.call' do
     [
       [nil, nil, TypesSpec::MISSING],
