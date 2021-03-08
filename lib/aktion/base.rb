@@ -105,6 +105,14 @@ module Aktion
       instance
     end
 
+    def self.readers(*args)
+      args.each do |arg|
+        define_method arg do
+          request[arg]
+        end
+      end
+    end
+
     attr_accessor :request, :options, :errors, :status, :body
 
     def initialize(request, options)

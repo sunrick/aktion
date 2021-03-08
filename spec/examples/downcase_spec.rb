@@ -1,8 +1,10 @@
 class Downcase < Aktion::Base
   request { required(:name, :string) }
 
+  readers :name
+
   def perform
-    respond :ok, name: request[:name].downcase
+    respond :ok, name: name.downcase
   end
 end
 
