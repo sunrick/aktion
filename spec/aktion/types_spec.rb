@@ -4,13 +4,18 @@ module TypesSpec
   OK = nil
 
   class StringChild < String; end
+  class Dog
+    def ==(value)
+      value.is_a?(Dog)
+    end
+  end
 end
 
 RSpec.describe Aktion::Types::Any do
   context '.call' do
     [
       [nil, nil, TypesSpec::MISSING],
-      ['', '', TypesSpec::OK],
+      ['', '', TypesSpec::MISSING],
       ['a', 'a', TypesSpec::OK],
       [1, 1, TypesSpec::OK],
       ['1', '1', TypesSpec::OK],
@@ -35,6 +40,44 @@ RSpec.describe Aktion::Types::Any do
       ['false', 'false', TypesSpec::OK]
     ].each do |input, output, message|
       specify { expect(described_class.call(input)).to eq([output, message]) }
+    end
+  end
+end
+
+RSpec.describe Aktion::Types::Single do
+  context '.call' do
+    [
+      [nil, nil, TypesSpec::MISSING],
+      ['', '', TypesSpec::MISSING],
+      ['a', 'a', TypesSpec::INVALID],
+      [1, 1, TypesSpec::INVALID],
+      ['1', '1', TypesSpec::INVALID],
+      [1.12, 1.12, TypesSpec::INVALID],
+      ['1.12', '1.12', TypesSpec::INVALID],
+      [BigDecimal('1.55'), BigDecimal('1.55'), TypesSpec::INVALID],
+      ['2021-01-01', '2021-01-01', TypesSpec::INVALID],
+      [Date.parse('2021-01-01'), Date.parse('2021-01-01'), TypesSpec::INVALID],
+      [
+        DateTime.parse('2021-01-01'),
+        DateTime.parse('2021-01-01'),
+        TypesSpec::INVALID
+      ],
+      [Time.parse('2021-01-01'), Time.parse('2021-01-01'), TypesSpec::INVALID],
+      [true, true, TypesSpec::INVALID],
+      [false, false, TypesSpec::INVALID],
+      [{}, {}, TypesSpec::INVALID],
+      [{ a: 1 }, { a: 1 }, TypesSpec::INVALID],
+      [[], [], TypesSpec::INVALID],
+      [[1], [1], TypesSpec::INVALID],
+      ['true', 'true', TypesSpec::INVALID],
+      ['false', 'false', TypesSpec::INVALID],
+      [TypesSpec::Dog.new, TypesSpec::Dog.new, TypesSpec::OK]
+    ].each do |input, output, message|
+      specify do
+        expect(described_class.call(input, TypesSpec::Dog)).to eq(
+          [output, message]
+        )
+      end
     end
   end
 end

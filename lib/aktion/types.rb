@@ -8,14 +8,27 @@ module Aktion
     INVALID = :invalid
     NIL = nil.freeze
 
-    def self.empty_string?(value)
-      value.nil? || (value.respond_to?(:to_str) && value.length == 0)
+    class Any
+      def self.empty_string?(value); end
+
+      def self.call(value)
+        if value.nil? || (value.respond_to?(:to_str) && value.length == 0)
+          [value, MISSING]
+        else
+          [value, NIL]
+        end
+      end
     end
 
-    class Any
-      def self.call(value)
-        message = MISSING if value.nil?
-        [value, message]
+    class Single
+      def self.call(value, type)
+        if value.nil? || (value.respond_to?(:to_str) && value.length == 0)
+          [value, MISSING]
+        elsif !value.is_a?(type)
+          [value, INVALID]
+        else
+          [value, NIL]
+        end
       end
     end
 

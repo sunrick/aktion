@@ -16,7 +16,7 @@ module Aktion
       {
         key: key,
         type: type,
-        typer: TYPES[type],
+        type_checker: type_checker(type),
         default: nil,
         description: nil,
         example: nil,
@@ -26,10 +26,14 @@ module Aktion
       }.merge(opts)
     end
 
+    def self.type_checker(type)
+      type.class == Class ? TYPES[:single] : TYPES[type]
+    end
+
     class Any
       attr_accessor :key,
                     :type,
-                    :typer,
+                    :type_checker,
                     :default,
                     :description,
                     :example,
@@ -70,8 +74,12 @@ module Aktion
         end
       end
 
+      def type_check(value)
+        type_checker.call(value)
+      end
+
       def call(k:, value:, errors:)
-        value, message = typer.call(value)
+        value, message = type_check(value)
 
         if required? && message
           errors.add(k, message)
@@ -83,6 +91,12 @@ module Aktion
       end
 
       def call_children(k:, value:, errors:); end
+    end
+
+    class Single < Any
+      def type_check(value)
+        type_checker.call(value, key)
+      end
     end
 
     class Boolean < Any; end
@@ -146,6 +160,7 @@ module Aktion
 
     CLASSES = {
       any: Param::Any,
+      types: Param::Single,
       boolean: Param::Boolean,
       string: Param::String,
       integer: Param::Integer,
@@ -160,6 +175,7 @@ module Aktion
 
     TYPES = {
       any: Types::Any,
+      single: Types::Single,
       boolean: Types::Boolean,
       string: Types::String,
       integer: Types::Integer,
